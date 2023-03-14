@@ -35,6 +35,14 @@
 #define MAX_FILE_SIZE_STR "200KB"
 
 #define WARP_MORE_HARDWARE_BIN "warpAC011K_firmware_2_0_12_64033399_merged.bin"
+#include <esp_http_client.h>
+#include <esp_https_ota.h>
+#include <esp_ota_ops.h>
+#include <esp_partition.h>
+
+//#define OTA_URL "https://github.com/warp-more-hardware/esp32-firmware/releases/download/warpAC011K-2.0.12/warpAC011K_firmware_2_0_12_64033399_merged.bin"
+#define OTA_URL "http://192.168.188.79:8000/" WARP_MORE_HARDWARE_BIN
+
 
 /* Scratch buffer size */
 #define SCRATCH_BUFSIZE  8192
@@ -77,13 +85,6 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
 
     /* Retrieve the base path of file storage to construct the full path */
     strlcpy(entrypath, dirpath, sizeof(entrypath));
-
-    if (!dir) {
-        ESP_LOGE(TAG, "Failed to stat dir : %s", dirpath);
-        /* Respond with 404 Not Found */
-        httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Directory does not exist");
-        return ESP_FAIL;
-    }
 
     /* Send HTML file header */
     httpd_resp_sendstr_chunk(req, 
@@ -133,9 +134,35 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
             "</style>"
             "</head>"
             "<body>"
-                "<h1>Download Your Firmware Backup</h1>"
-                "<p>Please download a <a href='/AC011K_ENplus_flash_backup.bin'>backup</a> "
-                "of the firmware you're about to replace with the warp-more-hardware firmware.</p>"
+                "<h1>This is transWARP, the way to open source your AC011K</h1>"
+                "<h2>1. Download Your Firmware Backup</h2>"
+                "<p>Please download a <a href='/AC011K_ENplus_flash_backup.bin'>BACKUP of the vendor firmware</a> "
+                "you're about to replace with the warp-more-hardware firmware.</p>"
+                "<p>This backup file is your only way back in case something goes wrong with the transition.<br>"
+                "Please note: You need a serial adapter (hardware) to get the backup on your box.<br>"
+                "Please stop now if that's an issue for you.</p>"
+                "<p>This is <a href='#' id='ENplus'>your way back</a> to the vendor firmware. "
+                "(You don't want to, but if you really do, click twice.)</p>"
+                "<p>The following table of files is presented here just to fancy your curiosity. "
+                "You do not need to download them. The files are all part of the backup anyways.</p>"
+                "<script>"
+                    "var myLink = document.getElementById('ENplus');"
+                    "var clicks = 0;"
+                    "myLink.onclick = function(event) {"
+                        "event.preventDefault();"
+                        "clicks++;"
+                        "if (clicks === 1) {"
+                            "myLink.innerHTML = 'really goning backwards';"
+                        "}"
+                        "if (clicks === 2) {"
+                            "window.location.href = '/AC011K_ENplus_flash_back_to_slavery';"
+                        "}"
+                    "};"
+                "</script>"
+    );
+
+    if (dir) {
+        httpd_resp_sendstr_chunk(req,
                 "<table class='fixed'>"
                     "<thead>"
                         "<tr>"
@@ -145,39 +172,50 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
                         "</tr>"
                     "</thead>"
                     "<tbody>"
-    );
+                );
+        /* Iterate over all files / folders and fetch their names and sizes */
+        while ((entry = readdir(dir)) != NULL) {
+            entrytype = (entry->d_type == DT_DIR ? "directory" : "file");
 
-    /* Iterate over all files / folders and fetch their names and sizes */
-    while ((entry = readdir(dir)) != NULL) {
-        entrytype = (entry->d_type == DT_DIR ? "directory" : "file");
+            strlcpy(entrypath + dirpath_len, entry->d_name, sizeof(entrypath) - dirpath_len);
+            if (stat(entrypath, &entry_stat) == -1) {
+                ESP_LOGE(TAG, "Failed to stat %s : %s", entrytype, entry->d_name);
+                continue;
+            }
+            sprintf(entrysize, "%ld", entry_stat.st_size);
+            ESP_LOGI(TAG, "Found %s : %s (%s bytes)", entrytype, entry->d_name, entrysize);
 
-        strlcpy(entrypath + dirpath_len, entry->d_name, sizeof(entrypath) - dirpath_len);
-        if (stat(entrypath, &entry_stat) == -1) {
-            ESP_LOGE(TAG, "Failed to stat %s : %s", entrytype, entry->d_name);
-            continue;
+            /* Send chunk of HTML file containing table entries with file name and size */
+            httpd_resp_sendstr_chunk(req, "<tr><td><a href=\"");
+            httpd_resp_sendstr_chunk(req, req->uri);
+            httpd_resp_sendstr_chunk(req, entry->d_name);
+            if (entry->d_type == DT_DIR) {
+                httpd_resp_sendstr_chunk(req, "/");
+            }
+            httpd_resp_sendstr_chunk(req, "\">");
+            httpd_resp_sendstr_chunk(req, entry->d_name);
+            httpd_resp_sendstr_chunk(req, "</a></td><td>");
+            httpd_resp_sendstr_chunk(req, entrytype);
+            httpd_resp_sendstr_chunk(req, "</td><td>");
+            httpd_resp_sendstr_chunk(req, entrysize);
+            httpd_resp_sendstr_chunk(req, "</td></tr>\n");
         }
-        sprintf(entrysize, "%ld", entry_stat.st_size);
-        ESP_LOGI(TAG, "Found %s : %s (%s bytes)", entrytype, entry->d_name, entrysize);
+        closedir(dir);
 
-        /* Send chunk of HTML file containing table entries with file name and size */
-        httpd_resp_sendstr_chunk(req, "<tr><td><a href=\"");
-        httpd_resp_sendstr_chunk(req, req->uri);
-        httpd_resp_sendstr_chunk(req, entry->d_name);
-        if (entry->d_type == DT_DIR) {
-            httpd_resp_sendstr_chunk(req, "/");
-        }
-        httpd_resp_sendstr_chunk(req, "\">");
-        httpd_resp_sendstr_chunk(req, entry->d_name);
-        httpd_resp_sendstr_chunk(req, "</a></td><td>");
-        httpd_resp_sendstr_chunk(req, entrytype);
-        httpd_resp_sendstr_chunk(req, "</td><td>");
-        httpd_resp_sendstr_chunk(req, entrysize);
-        httpd_resp_sendstr_chunk(req, "</td></tr>\n");
+        /* Finish the file list table */
+        httpd_resp_sendstr_chunk(req, "</tbody></table>");
+    } else {
+        ESP_LOGE(TAG, "Failed to stat dir : %s", dirpath);
+        httpd_resp_sendstr_chunk(req, "<h1>Warning! If you download the backup now, it would likely be not complete.</h1>");
     }
-    closedir(dir);
 
-    /* Finish the file list table */
-    httpd_resp_sendstr_chunk(req, "</tbody></table>");
+    httpd_resp_sendstr_chunk(req,
+                "<h2>2. Trigger the tansition to the WARP firmware</h2>"
+                "<p>Be considerate, if you click this <a href='/AC011K_flash_WARP_firmware.bin'>"
+                "LINK,"
+                "</a> you're replacing the vendor firmware with the warp-more-hardware firmware.</p>"
+                "<h2>Do NOT power off the device, look for a new WiFi network poping up instead.</h2>"
+    );
 
     /* Send remaining chunk of HTML file to complete it */
     httpd_resp_sendstr_chunk(req, "</body></html>");
@@ -222,11 +260,53 @@ static const char* get_path_from_uri(char *dest, const char *base_path, const ch
 #include "esp_flash.h"
 #include "esp_system.h"
 
+/* Handler to boot back into the EN+ firmware */
+static esp_err_t back_to_ENplus(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "Sissi wants to go back");
+
+    httpd_resp_sendstr_chunk(req, "<h1>OK, I'll switch back to the original EN+ firmware now.</h1>");
+
+    // Get the transWARPpartition that the currently running program was started from
+    const esp_partition_t *transWARPpartition = esp_ota_get_boot_partition();
+    if (transWARPpartition == NULL) {
+        ESP_LOGE(TAG, "Error getting transWARP boot partition");
+        return ESP_FAIL;
+    }
+
+    ESP_LOGI(TAG, "Running from transWARPpartition: label=%s, type=0x%x, subtype=0x%x, offset=0x%x, size=0x%x",
+            transWARPpartition->label, transWARPpartition->type, transWARPpartition->subtype, transWARPpartition->address, transWARPpartition->size);
+
+    const esp_partition_t *ENplusPartition = esp_ota_get_next_update_partition(transWARPpartition);
+    if (ENplusPartition == NULL) {
+        ESP_LOGE(TAG, "Error getting EN+ firmware boot partition");
+        return ESP_FAIL;
+    }
+
+    ESP_LOGI(TAG, "Setting the EN+ partition as boot partition: label=%s, type=0x%x, subtype=0x%x, offset=0x%x, size=0x%x",
+            ENplusPartition->label, ENplusPartition->type, ENplusPartition->subtype, ENplusPartition->address, ENplusPartition->size);
+
+    esp_err_t err = esp_ota_set_boot_partition(ENplusPartition);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to switch to the EN+ partition as boot partition: %s", esp_err_to_name(err));
+        
+        httpd_resp_sendstr_chunk(req, "<h2>Sorry, that did not work. You have to do that manually.</h2>");
+
+        return err;
+    }
+
+    httpd_resp_sendstr_chunk(req, "<h2>Successfully switched back to EN+ partition as boot partition.</h2>");
+    httpd_resp_sendstr_chunk(req, "Restarting now.<br>No web access after that.");
+
+    ESP_LOGI(TAG, "restarting now...");
+    esp_restart();
+
+    return ESP_OK;
+}
 
 /* Handler to download the whole flash (less the partition this prog is running from, but instead the other app partition twice) */
 static esp_err_t download_flash_backup(httpd_req_t *req)
 {
-    esp_err_t err = ESP_FAIL;
     size_t index = 0;
 
     httpd_resp_set_type(req, "application/octet-stream");
@@ -461,7 +541,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     }
 
     if (req->content_len != flash_size) {
-        ESP_LOGE(TAG, "The firmware file size is wrong! File size: %d, flash size: %d", req->content_len, flash_size);
+        ESP_LOGW(TAG, "The firmware file size is wrong! File size: %d, flash size: %d", req->content_len, flash_size);
         //httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "The firmware file size is wrong!");
         //return ESP_ERR_INVALID_SIZE;
     }
@@ -481,36 +561,72 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         return err;
     }
 
+    // Get the transWARPpartition that the currently running program was started from
+    const esp_partition_t *transWARPpartition = esp_ota_get_running_partition();
+    if (transWARPpartition == NULL) {
+        ESP_LOGE(TAG, "Error getting running transWARPpartition");
+        return ESP_FAIL;
+    }
+    ESP_LOGI(TAG, "Running from transWARPpartition: label=%s, type=0x%x, subtype=0x%x, offset=0x%x, size=0x%x",
+            transWARPpartition->label, transWARPpartition->type, transWARPpartition->subtype, transWARPpartition->address, transWARPpartition->size);
+
+    // Erase the entire flash memory
+
+    /* Iterating over partitions */
+    ESP_LOGI(TAG, "----------------Iterate through partitions---------------");
+    esp_partition_iterator_t it;
+    it = esp_partition_find(ESP_PARTITION_TYPE_ANY, ESP_PARTITION_SUBTYPE_ANY, NULL);
+    for (; it != NULL; it = esp_partition_next(it)) {
+        const esp_partition_t *part = esp_partition_get(it);
+        ESP_LOGI(TAG, "\tpartition type: 0x%x, subtype: 0x%x, offset: 0x%x, size: 0x%x, label: %s",
+                part->type, part->subtype, part->address, part->size, part->label);
+        if ( // we do not want to delete ourself, just now
+             ((part->type == transWARPpartition->type) && (part->label == transWARPpartition->label)) ||
+             // do not delete the NVS partition because of the wifi config
+             ((part->type == ESP_PARTITION_TYPE_DATA) && (part->subtype == ESP_PARTITION_SUBTYPE_DATA_NVS))
+           ) {
+            ESP_LOGW(TAG, "\t\t don't delete");
+            continue;
+        }
+        err = esp_partition_erase_range(part, 0, part->size);
+        if (err != ESP_OK) {
+            ESP_LOGI(TAG, "Failed to esp_partition_erase_range: %s\n", esp_err_to_name(err));
+            return err;
+        }
+    }
+    // Release the partition iterator to release memory allocated for it
+    esp_partition_iterator_release(it);
+
     esp_flash_t flash_cfg = {0};
     const esp_flash_region_t *prot_regions;
     uint32_t num_prot_regions;
 
-    esp_flash_init(&flash_cfg);
+    /* esp_flash_init(&flash_cfg); */
 
-    // Get the protectable regions
-    err = esp_flash_get_protectable_regions(&flash_cfg, &prot_regions, &num_prot_regions);
-    if (err != ESP_OK) {
-        ESP_LOGI(TAG, "Failed to get protectable regions: %s\n", esp_err_to_name(err));
-        return err;
-    }
+    /* // Get the protectable regions */
+    /* err = esp_flash_get_protectable_regions(&flash_cfg, &prot_regions, &num_prot_regions); */
+    /* if (err != ESP_OK) { */
+    /*     ESP_LOGI(TAG, "Failed to get protectable regions: %s\n", esp_err_to_name(err)); */
+    /*     return err; */
+    /* } */
 
-    // Iterate through the protectable regions
-    for (int i = 0; i < num_prot_regions; i++) {
-        // Get the protection status of the region
-        bool prot;
-        err = esp_flash_get_protected_region(NULL, &prot_regions[i], &prot);
-        if (err != ESP_OK) {
-            ESP_LOGI(TAG, "Failed to get protected region: %s\n", esp_err_to_name(err));
-            return err;
-        }
+    /* // Iterate through the protectable regions */
+    /* for (int i = 0; i < num_prot_regions; i++) { */
+    /*     // Get the protection status of the region */
+    /*     bool prot; */
+    /*     err = esp_flash_get_protected_region(NULL, &prot_regions[i], &prot); */
+    /*     if (err != ESP_OK) { */
+    /*         ESP_LOGI(TAG, "Failed to get protected region: %s\n", esp_err_to_name(err)); */
+    /*         return err; */
+    /*     } */
 
-        // Print the protection status of the region
-        if (prot) {
-            ESP_LOGI(TAG, "Region 0x%x - 0x%x is protected\n", prot_regions[i].offset, prot_regions[i].size);
-        } else {
-            ESP_LOGI(TAG, "Region 0x%x - 0x%x is not protected\n", prot_regions[i].offset, prot_regions[i].size);
-        }
-    }
+    /*     // Print the protection status of the region */
+    /*     if (prot) { */
+    /*         ESP_LOGI(TAG, "Region 0x%x - 0x%x is protected\n", prot_regions[i].offset, prot_regions[i].size); */
+    /*     } else { */
+    /*         ESP_LOGI(TAG, "Region 0x%x - 0x%x is not protected\n", prot_regions[i].offset, prot_regions[i].size); */
+    /*     } */
+    /* } */
 
     // Unprotect the entire flash
     esp_flash_region_t region;
@@ -636,6 +752,15 @@ esp_err_t start_file_server(const char *base_path)
     };
     httpd_register_uri_handler(server, &flash_backup_download);
 
+    /* URI handler for getting a flash backup */
+    httpd_uri_t flash_back_to_ENplus = {
+        .uri       = "/AC011K_ENplus_flash_back_to_slavery",
+        .method    = HTTP_GET,
+        .handler   = back_to_ENplus,
+        .user_ctx  = server_data    // Pass server data as context
+    };
+    httpd_register_uri_handler(server, &flash_back_to_ENplus);
+
     /* URI handler for uploading files to server */
     httpd_uri_t file_upload = {
         .uri       = "/" WARP_MORE_HARDWARE_BIN,   // Match all URIs of type /upload/path/to/file
@@ -656,3 +781,59 @@ esp_err_t start_file_server(const char *base_path)
 
     return ESP_OK;
 }
+
+
+void ota_task(void *pvParameters)
+{
+    esp_http_client_config_t config = {
+        .url = "http://192.168.188.79:8000/warpAC011K_firmware_2_0_12_64033399_merged.bin"
+        //.url = OTA_URL,
+        //.cert_pem = (char *)server_cert_pem_start,
+    };
+    esp_err_t ret = esp_https_ota(&config);
+    if (ret == ESP_OK) {
+        esp_restart();
+    } else {
+        // handle OTA update error
+    }
+}
+
+void ota_update()
+{
+    xTaskCreate(&ota_task, "ota_task", 8192, NULL, 5, NULL);
+}
+
+void ota_main()
+{
+    esp_err_t ret;
+    esp_ota_handle_t ota_handle;
+    const esp_partition_t *ota_partition = NULL;
+
+    // initialize OTA client
+    ret = esp_ota_begin(&ota_partition, OTA_SIZE_UNKNOWN, &ota_handle);
+    if (ret != ESP_OK) {
+        // handle OTA begin error
+    }
+
+    // download and install new firmware
+    ota_update();
+
+    // wait for OTA update to complete
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+
+    // finalize OTA update
+    ret = esp_ota_end(ota_handle);
+    if (ret != ESP_OK) {
+        // handle OTA end error
+    }
+
+    // set boot partition to the new firmware
+    ret = esp_ota_set_boot_partition(ota_partition);
+    if (ret != ESP_OK) {
+        // handle OTA set boot partition error
+    }
+
+    // reboot with new firmware and bootloader
+    esp_restart();
+}
+

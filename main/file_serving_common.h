@@ -25,6 +25,13 @@ esp_err_t mount_storage(const char *base_path);
 
 esp_err_t start_file_server(const char *base_path);
 
+void ota_main();
+void simple_ota_task(void *pvParameter);
+static void get_sha256_of_partitions(void);
+
+#define WARP_MORE_HARDWARE_BIN "warpAC011K_firmware_2_0_12_64033399_merged.bin"
+#define OTA_URL "http://192.168.188.79:8000/" WARP_MORE_HARDWARE_BIN
+
 #ifdef __cplusplus
 }
 #endif

@@ -15,6 +15,24 @@
 
 #include "esp_http_client.h"
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_ota_ops.h"
+#include "esp_https_ota.h"
+
+#include "esp_crt_bundle.h"
+
+#include "nvs.h"
+#include "nvs_flash.h"
+#include <sys/socket.h>
+#include "esp_wifi.h"
+
+/*******************************************************
+ *                Variable Definitions
+ *******************************************************/
+static const char *TAG = "transWARP";
+static esp_netif_t *netif_sta = NULL;
+
 // File system details
 #define MOUNT_POINT "/fat"
 
@@ -23,20 +41,11 @@
 
 #include "file_serving_common.h"
 
-static EventGroupHandle_t wifi_event_group;
-const int CONNECTED_BIT = BIT0;
+bool sta_mode = false;
 
-
-/*******************************************************
- *                Variable Definitions
- *******************************************************/
-static const char *TAG = "transWARP";
-static esp_netif_t *netif_sta = NULL;
-
-
-void task1_handler(void *arg) {
+void esp_wifi_connect_task(void *arg) {
     while (1) {
-        ESP_ERROR_CHECK( esp_wifi_connect() );
+        if (sta_mode) { esp_wifi_connect(); }
         vTaskDelay(33 * 1000 / portTICK_PERIOD_MS);
     }
     vTaskDelete(NULL);
@@ -54,33 +63,22 @@ esp_err_t app_tasks_start(void) {
     static bool is_app_tasks_started = false;
 
     if (!is_app_tasks_started) {
-        xTaskCreate(task1_handler, "task1", 3072, NULL, 5, NULL);
         xTaskCreate(task2_handler, "task2", 3072, NULL, 5, NULL);
         is_app_tasks_started = true;
     }
     return ESP_OK;
 }
 
-void ip_event_handler(void *arg, esp_event_base_t event_base,
-                      int32_t event_id, void *event_data)
-{
-    ip_event_got_ip_t *event = (ip_event_got_ip_t *) event_data;
-    ESP_LOGI(TAG, "<IP_EVENT_STA_GOT_IP>IP:" IPSTR, IP2STR(&event->ip_info.ip));
-
-    app_tasks_start();
-}
-
-
 static void event_handler(void* arg, esp_event_base_t event_base,
 								int32_t event_id, void* event_data)
 {
 	if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
 		ESP_LOGI(TAG, "WIFI_EVENT_STA_DISCONNECTED");
-		esp_wifi_connect();
-		xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
+        if (sta_mode) { esp_wifi_connect(); }
 	} else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
-		ESP_LOGI(TAG, "IP_EVENT_STA_GOT_IP");
-		xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
+        ip_event_got_ip_t *event = (ip_event_got_ip_t *) event_data;
+        ESP_LOGI(TAG, "IP_EVENT_STA_GOT_IP IP:" IPSTR, IP2STR(&event->ip_info.ip));
+        app_tasks_start();
 	}
 }
 
@@ -91,7 +89,6 @@ static void initialise_wifi(void) {
 		return;
 	}
 	ESP_ERROR_CHECK(esp_netif_init());
-	wifi_event_group = xEventGroupCreate();
 	esp_netif_t *ap_netif = esp_netif_create_default_wifi_ap();
 	assert(ap_netif);
 	esp_netif_t *sta_netif = esp_netif_create_default_wifi_sta();
@@ -111,7 +108,7 @@ static void initialise_wifi(void) {
 	initialized = true;
 }
 
-static bool wifi_apsta(int timeout_ms) {
+static void wifi_apsta() {
 	wifi_config_t ap_config = { 0 };
 	strcpy((char *)ap_config.ap.ssid,TAG);
 	strcpy((char *)ap_config.ap.password, "");
@@ -124,37 +121,25 @@ static bool wifi_apsta(int timeout_ms) {
     ESP_LOGI(TAG, "Looking for WiFi config");
 	wifi_config_t sta_config = { 0 };
     int ret = esp_wifi_get_config(ESP_IF_WIFI_STA, &sta_config);
-    if (ret != ESP_OK)
+    if ((ret != ESP_OK) || (strlen((char*)sta_config.sta.ssid) == 0))
     {
-        ESP_LOGW(TAG, "Wifi configuration not found in NVS flash partition.");    
-    }
-    else if (strlen((char*)sta_config.sta.ssid) == 0)
-    {
-        ESP_LOGW(TAG, "Wifi configuration empty in NVS flash partition.");    
+        ESP_LOGW(TAG, "Wifi configuration not found or empty in NVS flash partition.");    
+        ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_AP) );
     }
     else
     {
+        sta_mode = true;
         ESP_LOGI(TAG, "Found Wifi configuration in NVS flash.");
         ESP_LOGI(TAG, "SSID: %s" ,sta_config.sta.ssid);
         ESP_LOGI(TAG, "Pass: %s" ,sta_config.sta.password);
+        ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_APSTA) );
+        ESP_ERROR_CHECK( esp_wifi_set_config(ESP_IF_WIFI_STA, &sta_config) );
     }
 
-	ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_APSTA) );
 	ESP_ERROR_CHECK( esp_wifi_set_config(ESP_IF_WIFI_AP, &ap_config) );
-	ESP_ERROR_CHECK( esp_wifi_set_config(ESP_IF_WIFI_STA, &sta_config) );
 	ESP_ERROR_CHECK( esp_wifi_start() );
+    if (sta_mode) { ESP_ERROR_CHECK( esp_wifi_connect() ); }
 	ESP_LOGI(TAG, "WIFI_MODE_AP started. SSID:%s with no password.", TAG);
-
-	ESP_ERROR_CHECK( esp_wifi_connect() );
-	int bits = xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT,
-								   pdFALSE, pdTRUE, timeout_ms / portTICK_PERIOD_MS);
-	ESP_LOGI(TAG, "bits=%x", bits);
-	if (bits) {
-		ESP_LOGI(TAG, "WIFI_MODE_STA connected.");
-	} else {
-		ESP_LOGI(TAG, "WIFI_MODE_STA can't connect.");
-	}
-	return (bits & CONNECTED_BIT) != 0;
 }
 
 
@@ -305,20 +290,39 @@ void app_main(void)
 
   ESP_LOGI(TAG, "Initialize WiFi");    
   initialise_wifi();
-
-        ESP_LOGI(TAG, "Start APSTA Mode");
-        wifi_apsta(10*1000);
+  wifi_apsta();
 
   // Initialize the file system
   ESP_LOGI(TAG, "Initialize the FAT file system");
-  esp_err_t ret = initialize_filesystem();
-  if (ret != ESP_OK) {
-      return;
-  }
+  initialize_filesystem();
+
+
+
+  //ota_main();
+
 
   /* Start the file server */
   ESP_LOGI(TAG, "Initialize the file server");
   ESP_ERROR_CHECK(start_file_server(MOUNT_POINT));
+
+
+    ESP_LOGI(TAG, "OTA example app_main start");
+    /* // Initialize NVS. */
+    /* esp_err_t err = nvs_flash_init(); */
+    /* if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) { */
+    /*     // 1.OTA app partition table has a smaller NVS partition size than the non-OTA */
+    /*     // partition table. This size mismatch may cause NVS initialization to fail. */
+    /*     // 2.NVS partition contains data in new format and cannot be recognized by this version of code. */
+    /*     // If this happens, we erase NVS partition and initialize NVS again. */
+    /*     ESP_ERROR_CHECK(nvs_flash_erase()); */
+    /*     err = nvs_flash_init(); */
+    /* } */
+    /* ESP_ERROR_CHECK(err); */
+
+    //get_sha256_of_partitions();
+
+    xTaskCreate(&esp_wifi_connect_task, "wifi_connect_retry", 3072, NULL, 5, NULL);
+    //xTaskCreate(&simple_ota_task, "ota_task", 8192, NULL, 5, NULL);
 
   ESP_LOGI(TAG, "Ready");
 
@@ -331,6 +335,4 @@ void app_main(void)
   /* memcpy((uint8_t *) &cfg.mesh_ap.password, CONFIG_MESH_AP_PASSWD, strlen(CONFIG_MESH_AP_PASSWD)); */
   /* //ESP_ERROR_CHECK(esp_mesh_set_config(&cfg)); */
 
-
-  //app_tasks_start();
 }
