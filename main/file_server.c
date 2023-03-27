@@ -513,17 +513,7 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 /* Handler to upload a file onto the server */
 static esp_err_t upload_post_handler(httpd_req_t *req)
 {
-    /* /1* File cannot be larger than a limit *1/ */
-    /* if (req->content_len > MAX_FILE_SIZE) { */
-    /*     ESP_LOGE(TAG, "File too large : %d bytes", req->content_len); */
-    /*     /1* Respond with 400 Bad Request *1/ */
-    /*     httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, */
-    /*                         "File size must be less than " */
-    /*                         MAX_FILE_SIZE_STR "!"); */
-    /*     /1* Return failure to close underlying connection else the */
-    /*      * incoming file content will keep the socket busy *1/ */
-    /*     return ESP_FAIL; */
-    /* } */
+    int address = 0x1000; //start at the usual offset
 
     ESP_LOGI(TAG, "Receiving firmware ...");
 
@@ -535,15 +525,33 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     uint32_t flash_size;
     esp_err_t err = esp_flash_get_size(NULL, &flash_size);
     if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Error detecting flash size.");
+        ESP_LOGE(TAG, "Error detecting flash size. (%s)", esp_err_to_name(err));
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error detecting flash size.");
         return err;
     }
 
-    if (req->content_len != flash_size) {
-        ESP_LOGW(TAG, "The firmware file size is wrong! File size: %d, flash size: %d", req->content_len, flash_size);
-        //httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "The firmware file size is wrong!");
-        //return ESP_ERR_INVALID_SIZE;
+    // Get the transWARPpartition that the currently running program was started from
+    const esp_partition_t *transWARPpartition = esp_ota_get_running_partition();
+    if (transWARPpartition == NULL) {
+        ESP_LOGE(TAG, "Error getting running transWARPpartition");
+        return ESP_FAIL;
+    }
+    ESP_LOGI(TAG, "Running from transWARPpartition: label=%s, type=0x%x, subtype=0x%x, address=0x%x, size=0x%x, erase_size=0x%x",
+            transWARPpartition->label, transWARPpartition->type, transWARPpartition->subtype, transWARPpartition->address, transWARPpartition->size, transWARPpartition->erase_size);
+
+    /* File cannot be larger than a limit */
+    if (req->content_len > transWARPpartition->address - address) {
+        // address holds the offset (usually 0x1000), and the transWARPpartition should 
+        // by now be the second ota partition of the vendor firmware.
+        // That means, we have the space up to 0x290000, but starting at 0x1000. 
+        ESP_LOGE(TAG, "File too large : %d bytes", req->content_len);
+        ESP_LOGE(TAG, "The firmware is too big! File size: %d, but has to be less than %d bytes.", 
+                req->content_len, transWARPpartition->address - address);
+        /* Respond with 400 Bad Request */
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "The firmware file size is too big!");
+        /* Return failure to close underlying connection else the
+         * incoming file content will keep the socket busy */
+        return ESP_ERR_INVALID_SIZE;
     }
 
     bool write_protected;
@@ -556,24 +564,16 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
             ESP_LOGI(TAG, "Flash is writeable");
         }
     } else {
-        ESP_LOGE(TAG, "Failed to esp_flash_get_chip_write_protect");
+        ESP_LOGE(TAG, "Failed to esp_flash_get_chip_write_protect (%s)", esp_err_to_name(err));
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error detecting flash write protection.");
         return err;
     }
-
-    // Get the transWARPpartition that the currently running program was started from
-    const esp_partition_t *transWARPpartition = esp_ota_get_running_partition();
-    if (transWARPpartition == NULL) {
-        ESP_LOGE(TAG, "Error getting running transWARPpartition");
-        return ESP_FAIL;
-    }
-    ESP_LOGI(TAG, "Running from transWARPpartition: label=%s, type=0x%x, subtype=0x%x, offset=0x%x, size=0x%x",
-            transWARPpartition->label, transWARPpartition->type, transWARPpartition->subtype, transWARPpartition->address, transWARPpartition->size);
 
     // Erase the entire flash memory
 
     /* Iterating over partitions */
     ESP_LOGI(TAG, "----------------Iterate through partitions---------------");
+    uint32_t flash_erased_up_to = 0;
     esp_partition_iterator_t it;
     it = esp_partition_find(ESP_PARTITION_TYPE_ANY, ESP_PARTITION_SUBTYPE_ANY, NULL);
     for (; it != NULL; it = esp_partition_next(it)) {
@@ -581,9 +581,10 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         ESP_LOGI(TAG, "\tpartition type: 0x%x, subtype: 0x%x, offset: 0x%x, size: 0x%x, label: %s",
                 part->type, part->subtype, part->address, part->size, part->label);
         if ( // we do not want to delete ourself, just now
-             ((part->type == transWARPpartition->type) && (part->label == transWARPpartition->label)) ||
-             // do not delete the NVS partition because of the wifi config
-             ((part->type == ESP_PARTITION_TYPE_DATA) && (part->subtype == ESP_PARTITION_SUBTYPE_DATA_NVS))
+             ((part->type == transWARPpartition->type) && (part->label == transWARPpartition->label))
+             /* || */
+             /* // do not delete the NVS partition because of the wifi config */
+             /* ((part->type == ESP_PARTITION_TYPE_DATA) && (part->subtype == ESP_PARTITION_SUBTYPE_DATA_NVS)) */
            ) {
             ESP_LOGW(TAG, "\t\t don't delete");
             continue;
@@ -593,71 +594,45 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
             ESP_LOGI(TAG, "Failed to esp_partition_erase_range: %s\n", esp_err_to_name(err));
             return err;
         }
+        flash_erased_up_to += part->size;
     }
     // Release the partition iterator to release memory allocated for it
     esp_partition_iterator_release(it);
 
-    esp_flash_t flash_cfg = {0};
-    const esp_flash_region_t *prot_regions;
-    uint32_t num_prot_regions;
-
-    /* esp_flash_init(&flash_cfg); */
-
-    /* // Get the protectable regions */
-    /* err = esp_flash_get_protectable_regions(&flash_cfg, &prot_regions, &num_prot_regions); */
-    /* if (err != ESP_OK) { */
-    /*     ESP_LOGI(TAG, "Failed to get protectable regions: %s\n", esp_err_to_name(err)); */
-    /*     return err; */
-    /* } */
-
-    /* // Iterate through the protectable regions */
-    /* for (int i = 0; i < num_prot_regions; i++) { */
-    /*     // Get the protection status of the region */
-    /*     bool prot; */
-    /*     err = esp_flash_get_protected_region(NULL, &prot_regions[i], &prot); */
-    /*     if (err != ESP_OK) { */
-    /*         ESP_LOGI(TAG, "Failed to get protected region: %s\n", esp_err_to_name(err)); */
-    /*         return err; */
-    /*     } */
-
-    /*     // Print the protection status of the region */
-    /*     if (prot) { */
-    /*         ESP_LOGI(TAG, "Region 0x%x - 0x%x is protected\n", prot_regions[i].offset, prot_regions[i].size); */
-    /*     } else { */
-    /*         ESP_LOGI(TAG, "Region 0x%x - 0x%x is not protected\n", prot_regions[i].offset, prot_regions[i].size); */
-    /*     } */
-    /* } */
-
     // Unprotect the entire flash
+    ESP_LOGI(TAG, "Unprotect entire flash");
     esp_flash_region_t region;
-    region.offset = 0x1000;
-    region.size = flash_size - 0x1000;
+    region.offset = 0x0;
+    region.size = flash_size;
     esp_flash_set_protected_region(NULL, &region, false);
     if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to unprotect flash");
+        ESP_LOGE(TAG, "Failed to unprotect flash (%s)", esp_err_to_name(err));
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to unprotect flash");
         return err;
     }
 
-    /* // Erase the entire flash */
-    /* err = esp_flash_erase_chip(NULL); */
-    /* if (err != ESP_OK) { */
-    /*     ESP_LOGE(TAG, "Failed to erase flash"); */
-    /*     httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to erase flash"); */
-    /*     return err; */
-    /* } */
-
-    // Erase the entire flash
-    err = esp_flash_erase_region(NULL, 0x1000, flash_size - 0x1000);
+    // Erase flash begin
+    ESP_LOGI(TAG, "Erase flash up to first partition");
+    err = esp_flash_erase_region(NULL, 0x1000, 0x10000 - 0x1000);
     if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to erase flash");
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to erase flash");
+        ESP_LOGE(TAG, "Failed to erase flash (%s)", esp_err_to_name(err));
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to erase flash");
         return err;
     }
 
+    // Erase end of flash
+    ESP_LOGI(TAG, "Erase flash after last partition");
+    err = esp_flash_erase_region(NULL, flash_erased_up_to, flash_size - flash_erased_up_to);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to erase flash (%s)", esp_err_to_name(err));
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to erase flash");
+        return err;
+    }
+
+    ESP_LOGI(TAG, "Done erase region");
+
     /* Content length of the request gives the size of the file being uploaded */
     int remaining = req->content_len;
-    int address = 0;
 
     while (remaining > 0) {
 
@@ -680,21 +655,24 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
             return ESP_FAIL;
         }
 
-        ESP_LOGI(TAG, "would write at %x, %d bytes", address, received);
-        /* /1* Write buffer content to flash *1/ */
-        /* esp_err_t err = esp_flash_write(NULL, buf, address, received); */
-        /* if (err != ESP_OK) { */
-        /*     ESP_LOGE(TAG, "Failed to write flash"); */
-        /*     httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to write flash"); */
-        /*     return err; */
-        /* } */
+        int bytes_to_write = (address + received) < transWARPpartition->address ? received : transWARPpartition->address - address;
 
+        /* Write buffer content to flash */
+        if ((address < transWARPpartition->address) || (address > (transWARPpartition->address + transWARPpartition->size))) {
+            ESP_LOGI(TAG, "normal write at %x, %d bytes", address, bytes_to_write);
+            esp_err_t err = esp_flash_write(NULL, buf, address, bytes_to_write);
+            if (err != ESP_OK) {
+                ESP_LOGE(TAG, "Failed to write flash (%s)", esp_err_to_name(err));
+                httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to write flash");
+                return err;
+            }
+        }
         /* Keep track of remaining size of the file left to be uploaded */
         address += received;
         remaining -= received;
     }
 
-    ESP_LOGI(TAG, "File reception complete");
+    ESP_LOGI(TAG, "File reception / flasing complete, restarting into the new firmware.");
 
     /* Redirect onto root to see the updated file list */
     httpd_resp_set_status(req, "303 See Other");
@@ -704,8 +682,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 #endif
     httpd_resp_sendstr(req, "File uploaded successfully");
 
-
-    // esp.reboot;
+    esp_restart();
 
     return ESP_OK;
 }
@@ -760,6 +737,15 @@ esp_err_t start_file_server(const char *base_path)
         .user_ctx  = server_data    // Pass server data as context
     };
     httpd_register_uri_handler(server, &flash_back_to_ENplus);
+
+    /* /1* URI handler for flash the new firmware *1/ */
+    /* httpd_uri_t flash_backup_download = { */
+    /*     .uri       = "/AC011K_flash_WARP_firmware.bin", */
+    /*     .method    = HTTP_GET, */
+    /*     .handler   = download_flash_backup, */
+    /*     .user_ctx  = server_data    // Pass server data as context */
+    /* }; */
+    /* httpd_register_uri_handler(server, &flash_backup_download); */
 
     /* URI handler for uploading files to server */
     httpd_uri_t file_upload = {

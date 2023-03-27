@@ -177,7 +177,39 @@ static esp_err_t initialize_filesystem(void) {
     // Mount a FAT partition on the SPI flash memory
     esp_err_t ret = esp_vfs_fat_spiflash_mount_ro(MOUNT_POINT, "storage", &mount_config);
     if (ret != ESP_OK) {
+
+        // we take this as the indicator that we already switched to the WARP partition table and erased the flash
+
         ESP_LOGE(TAG, "Failed to mount FAT file system: %s", esp_err_to_name(ret));
+
+        // Get the transWARPpartition that the currently running program was started from
+        const esp_partition_t *transWARPpartition = esp_ota_get_boot_partition();
+        if (transWARPpartition == NULL) {
+            ESP_LOGE(TAG, "Error getting transWARP boot partition");
+            return ESP_FAIL;
+        }
+
+        ESP_LOGI(TAG, "Running from transWARPpartition: label=%s, type=0x%x, subtype=0x%x, offset=0x%x, size=0x%x",
+                transWARPpartition->label, transWARPpartition->type, transWARPpartition->subtype, transWARPpartition->address, transWARPpartition->size);
+
+        const esp_partition_t *ENplusPartition = esp_ota_get_next_update_partition(transWARPpartition);
+        if (ENplusPartition == NULL) {
+            ESP_LOGE(TAG, "Error getting EN+ firmware boot partition");
+            return ESP_FAIL;
+        }
+
+        ESP_LOGI(TAG, "Setting the EN+ partition as boot partition: label=%s, type=0x%x, subtype=0x%x, offset=0x%x, size=0x%x",
+                ENplusPartition->label, ENplusPartition->type, ENplusPartition->subtype, ENplusPartition->address, ENplusPartition->size);
+
+        esp_err_t err = esp_ota_set_boot_partition(ENplusPartition);
+        if (err != ESP_OK) {
+            ESP_LOGE(TAG, "Failed to switch to the EN+ partition as boot partition: %s", esp_err_to_name(err));
+            return err;
+        }
+
+        ESP_LOGI(TAG, "restarting now...");
+        esp_restart();
+
         return ret;
     }
     else {
