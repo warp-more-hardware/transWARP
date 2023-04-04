@@ -16,5 +16,7 @@ cp -a build/transWARP.bin bin/
 
 cp ../warp-more-hardware-esp32-firmware/software/build/warpAC011K_firmware_2_0_12_64033399_merged.bin bin/
 
-zip -9 -o -j -r transWARP.zip bin
+TAG=$(git tag --contains HEAD)
+
+zip -9 -o -j -r transWARP-$TAG.zip bin
 
