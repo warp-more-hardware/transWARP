@@ -7,13 +7,10 @@
 #include "freertos/event_groups.h"
 #include "esp_system.h"
 
-
 #include <stdio.h>
 #include "esp_http_server.h"
 #include "esp_vfs_fat.h"
 #include <dirent.h>
-
-#include "esp_http_client.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -24,18 +21,37 @@
 #include "esp_crt_bundle.h"
 
 #include "nvs.h"
-#include "nvs_flash.h"
 #include <sys/socket.h>
-#include "esp_wifi.h"
 
 #include "mdns.h"
 
+#include <sys/param.h>
+#include <sys/unistd.h>
+#include <sys/stat.h>
+
+#include "sdkconfig.h"
+#include "esp_err.h"
+
+#include "esp_vfs.h"
+#include "esp_spiffs.h"
+#include <esp_netif.h>
+
+#include <esp_http_client.h>
+#include <esp_tls.h>
+#include <esp_partition.h>
+
+#include "cJSON.h"
 
 /*******************************************************
  *                Variable Definitions
  *******************************************************/
+
+/* Max length a file path can have on storage */
+#define FILE_PATH_MAX (ESP_VFS_PATH_MAX + CONFIG_SPIFFS_OBJ_NAME_LEN)
+#define MAX_HTTP_OUTPUT_BUFFER 2048
+
+#define WARP_MORE_HARDWARE_BIN "warpAC011K_firmware_2_0_12_64033399_merged.bin"
 static const char *TAG = "transWARP";
-static esp_netif_t *netif_sta = NULL;
 
 #define MDNS_HOSTNAME "transWARP"
 
@@ -45,13 +61,27 @@ static esp_netif_t *netif_sta = NULL;
 bool backup_available = false;
 bool ready_to_flash = false;
 bool mdns_initialized = false;
-
-// Web server details
-#define WEB_PORT 80
-
-#include "file_serving_common.h"
-
 bool sta_mode = false;
+bool backup_done = false;
+char clientIPaddress[INET6_ADDRSTRLEN] = "127.0.0.1";
+const esp_partition_t *transWARPpartition;
+
+int address = 0x1000; //start flashing the new WARP firmware at the usual offset
+
+/* Scratch buffer size */
+#define SCRATCH_BUFSIZE  8192
+
+//#define OTA_URL "https://github.com/warp-more-hardware/esp32-firmware/releases/download/warpAC011K-2.0.12/warpAC011K_firmware_2_0_12_64033399_merged.bin"
+char OTA_URL[256] = "https://github.com/warp-more-hardware/esp32-firmware/releases/download/warpAC011K-2.0.12/warpAC011K_firmware_2_0_12_64033399_merged.bin";
+//#define OTA_URL "http://192.168.188.79:8000/" WARP_MORE_HARDWARE_BIN
+
+struct file_server_data {
+    /* Base path of file storage */
+    char base_path[ESP_VFS_PATH_MAX + 1];
+
+    /* Scratch buffer for temporary storage during file transfer */
+    char scratch[SCRATCH_BUFSIZE];
+};
 
 void esp_wifi_connect_task(void *arg) {
     while (1) {
@@ -59,24 +89,6 @@ void esp_wifi_connect_task(void *arg) {
         vTaskDelay(33 * 1000 / portTICK_PERIOD_MS);
     }
     vTaskDelete(NULL);
-}
-
-void task2_handler(void *arg) {
-    while (1) {
-        //ESP_LOGI(TAG, "Tas2 tick");
-        vTaskDelay(55 * 1000 / portTICK_PERIOD_MS);
-    }
-    vTaskDelete(NULL);
-}
-
-esp_err_t app_tasks_start(void) {
-    static bool is_app_tasks_started = false;
-
-    if (!is_app_tasks_started) {
-        xTaskCreate(task2_handler, "task2", 3072, NULL, 5, NULL);
-        is_app_tasks_started = true;
-    }
-    return ESP_OK;
 }
 
 static void event_handler(void* arg, esp_event_base_t event_base,
@@ -88,8 +100,43 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 	} else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t *event = (ip_event_got_ip_t *) event_data;
         ESP_LOGI(TAG, "IP_EVENT_STA_GOT_IP IP:" IPSTR, IP2STR(&event->ip_info.ip));
-        app_tasks_start();
 	}
+}
+
+static void ota_event_handler(void* arg, esp_event_base_t event_base,
+                          int32_t event_id, void* event_data)
+{
+    if (event_base == ESP_HTTPS_OTA_EVENT) {
+        switch (event_id) {
+            case ESP_HTTPS_OTA_START:
+                ESP_LOGI(TAG, "OTA started");
+                break;
+            case ESP_HTTPS_OTA_CONNECTED:
+                ESP_LOGI(TAG, "Connected to server");
+                break;
+            case ESP_HTTPS_OTA_GET_IMG_DESC:
+                ESP_LOGI(TAG, "Reading Image Description");
+                break;
+            case ESP_HTTPS_OTA_VERIFY_CHIP_ID:
+                ESP_LOGI(TAG, "Verifying chip id of new image: %d", *(esp_chip_id_t *)event_data);
+                break;
+            case ESP_HTTPS_OTA_DECRYPT_CB:
+                ESP_LOGI(TAG, "Callback to decrypt function");
+                break;
+            case ESP_HTTPS_OTA_WRITE_FLASH:
+                ESP_LOGW(TAG, "Writing to flash: %d written", *(int *)event_data);
+                break;
+            case ESP_HTTPS_OTA_UPDATE_BOOT_PARTITION:
+                ESP_LOGI(TAG, "Boot partition updated. Next Partition: %d", *(esp_partition_subtype_t *)event_data);
+                break;
+            case ESP_HTTPS_OTA_FINISH:
+                ESP_LOGI(TAG, "OTA finish");
+                break;
+            case ESP_HTTPS_OTA_ABORT:
+                ESP_LOGI(TAG, "OTA abort");
+                break;
+        }
+    }
 }
 
 void initialise_mdns(void)
@@ -116,11 +163,11 @@ void initialise_mdns(void)
     if (backup_available) {
         ESP_ERROR_CHECK( mdns_service_txt_item_set("_EN-http", "_tcp", "BACKUP", "/AC011K_ENplus_flash_backup.bin") );
     }
-    if (ready_to_flash) {
-        ESP_ERROR_CHECK( mdns_service_txt_item_set("_EN-http", "_tcp", "POST", "/AC011K_flash_WARP_firmware.bin") );
-    } else {
+    /* if (ready_to_flash) { */
+    /*     ESP_ERROR_CHECK( mdns_service_txt_item_set("_EN-http", "_tcp", "POST", "/AC011K_flash_WARP_firmware.bin") ); */
+    /* } else { */
         ESP_ERROR_CHECK( mdns_service_txt_item_set("_EN-http", "_tcp", "GET", "/AC011K_flash_WARP_firmware.bin") );
-    }
+    /* } */
     mdns_initialized = true;
 }
 
@@ -139,6 +186,7 @@ static void initialise_wifi(void) {
 	ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
 	ESP_ERROR_CHECK( esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &event_handler, NULL) );
 	ESP_ERROR_CHECK( esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL) );
+	ESP_ERROR_CHECK( esp_event_handler_register(ESP_HTTPS_OTA_EVENT, ESP_EVENT_ANY_ID, &ota_event_handler, NULL) );
 
     ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_FLASH));
 	//ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
@@ -184,19 +232,6 @@ static void wifi_apsta() {
 	ESP_LOGI(TAG, "WIFI_MODE_AP started. SSID:%s with no password.", TAG);
 }
 
-
-/********************************************************************************
- * http put something
- * */
-
-// HTTP web server details
-#define WEB_SERVER "http://example.com/upload.php"
-#define WEB_PORT 80
-#define WEB_PATH "/upload"
-
-#define FILE_NAME "example.txt"
-
-
 // Initialize the SD card and mount the FAT file system
 static esp_err_t initialize_filesystem(void) {
     /* sdmmc_host_t host = SDMMC_HOST_DEFAULT(); */
@@ -230,76 +265,11 @@ static esp_err_t initialize_filesystem(void) {
     return ESP_OK;
 }
 
-// Read the contents of the file and upload it to the web server
-static esp_err_t upload_file(void) {
-    // Open the file for reading
-    char path[32];
-    sprintf(path, "%s/%s", MOUNT_POINT, FILE_NAME);
-    FILE* f = fopen(path, "r");
-    if (f == NULL) {
-        ESP_LOGE(TAG, "Failed to open file for reading");
-        return ESP_FAIL;
-    }
-
-    // Get the file size
-    fseek(f, 0, SEEK_END);
-    long file_size = ftell(f);
-    fseek(f, 0, SEEK_SET);
-
-    // Allocate a buffer for the file contents
-    char* file_contents = (char*) malloc(file_size);
-    if (file_contents == NULL) {
-        ESP_LOGE(TAG, "Failed to allocate buffer for file contents");
-        fclose(f);
-        return ESP_FAIL;
-    }
-
-    // Read the file contents into the buffer
-    size_t bytes_read = fread(file_contents, 1, file_size, f);
-    fclose(f);
-    if (bytes_read != file_size) {
-        ESP_LOGE(TAG, "Failed to read entire file");
-        free(file_contents);
-        return ESP_FAIL;
-    }
-
-    // Initialize the HTTP client configuration
-    esp_http_client_config_t config = {
-        .url = WEB_SERVER WEB_PATH,
-        .port = WEB_PORT,
-        .method = HTTP_METHOD_PUT,
-        .buffer_size = file_size,
-        //.upload_data = file_contents,
-        //.upload_len = file_size
-    };
-
-    // Initialize the HTTP client
-    esp_http_client_handle_t client = esp_http_client_init(&config);
-    if (client == NULL) {
-        ESP_LOGE(TAG, "Failed to initialize HTTP client");
-        free(file_contents);
-        return ESP_FAIL;
-    }
-
-    // Perform the HTTP request
-    esp_err_t err = esp_http_client_perform(client);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to perform HTTP request: %s", esp_err_to_name(err));
-    }
-
-    // Clean up
-    esp_http_client_cleanup(client);
-    free(file_contents);
-
-    return err;
-}
-
-
-// Make sure we run from the second OTA partition
-static esp_err_t ensure_transWARP_to_be_on_second_ota_partition() {
+// get transWARP (currently running) partition
+static esp_err_t get_transWARP_partition() {
 
     // Get the transWARPpartition that the currently running program was started from
-    const esp_partition_t *transWARPpartition = esp_ota_get_boot_partition();
+    transWARPpartition = esp_ota_get_running_partition();
     if (transWARPpartition == NULL) {
         ESP_LOGE(TAG, "Error getting transWARP boot partition");
         return ESP_FAIL;
@@ -308,8 +278,17 @@ static esp_err_t ensure_transWARP_to_be_on_second_ota_partition() {
     ESP_LOGI(TAG, "Running from partition: label=%s, type=0x%x, subtype=0x%x, offset=0x%x, size=0x%x",
             transWARPpartition->label, transWARPpartition->type, transWARPpartition->subtype, transWARPpartition->address, transWARPpartition->size);
 
+    return ESP_OK;
+}
+
+// Make sure we run from the second OTA partition
+static esp_err_t ensure_transWARP_to_be_on_second_ota_partition() {
+
+    ESP_ERROR_CHECK(get_transWARP_partition());
+
     if (transWARPpartition->address != 0x10000) {
         ESP_LOGI(TAG, "All good, transWARP is not running from the first OTA partition.");
+        ESP_ERROR_CHECK(esp_ota_mark_app_valid_cancel_rollback());
         ready_to_flash = true;
         if (mdns_initialized) {
             ESP_ERROR_CHECK( mdns_service_txt_item_set("_EN-http", "_tcp", "POST", "/AC011K_flash_WARP_firmware.bin") );
@@ -323,7 +302,7 @@ static esp_err_t ensure_transWARP_to_be_on_second_ota_partition() {
     const esp_partition_t *ota_partition = esp_ota_get_next_update_partition(transWARPpartition);
     //const esp_partition_t *ota_partition = esp_ota_get_next_update_partition(NULL);
     if (ota_partition == NULL) {
-        ESP_LOGE(TAG, "Error getting oter OTA partition");
+        ESP_LOGE(TAG, "Error getting other OTA partition");
         return ESP_FAIL;
     }
 
@@ -382,70 +361,225 @@ static esp_err_t ensure_transWARP_to_be_on_second_ota_partition() {
     return ESP_OK;
 }
 
-/*
- * SPDX-FileCopyrightText: 2022 Espressif Systems (Shanghai) CO LTD
- *
- * SPDX-License-Identifier: Unlicense OR CC0-1.0
- */
-/* HTTP File Server Example
+/* Helper to clean the flash for the WARP firmware just before flashing */
+//static esp_err_t prepare_flash_for_WARP(httpd_req_t *req)
+static esp_err_t prepare_flash_for_WARP()
+{
+    // Get the size of the flash
+    uint32_t flash_size;
+    esp_err_t err = esp_flash_get_size(NULL, &flash_size);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Error detecting flash size. (%s)", esp_err_to_name(err));
+        //httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error detecting flash size.");
+        return err;
+    }
 
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
+    ESP_ERROR_CHECK(get_transWARP_partition());
 
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
+    /* /1* File cannot be larger than a limit *1/ */
+    /* if (req->content_len > transWARPpartition->address - address) { */
+    /*     // address holds the offset (usually 0x1000), and the transWARPpartition should */ 
+    /*     // by now be the second ota partition of the vendor firmware. */
+    /*     // That means, we have the space up to 0x290000, but starting at 0x1000. */ 
+    /*     ESP_LOGE(TAG, "File too large : %d bytes", req->content_len); */
+    /*     ESP_LOGE(TAG, "The firmware is too big! File size: %d, but has to be less than %d bytes.", */ 
+    /*             req->content_len, transWARPpartition->address - address); */
+    /*     /1* Respond with 400 Bad Request *1/ */
+    /*     httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "The firmware file size is too big!"); */
+    /*     /1* Return failure to close underlying connection else the */
+    /*      * incoming file content will keep the socket busy *1/ */
+    /*     return ESP_ERR_INVALID_SIZE; */
+    /* } */
 
-#include <stdio.h>
-#include <string.h>
-#include <sys/param.h>
-#include <sys/unistd.h>
-#include <sys/stat.h>
-#include <dirent.h>
+    bool write_protected;
+    err = esp_flash_get_chip_write_protect(NULL, &write_protected);
+    if (err == ESP_OK) {
+        if (write_protected) {
+            ESP_LOGI(TAG, "Flash is write protected, unlocking it...");
+            ESP_ERROR_CHECK(esp_flash_set_chip_write_protect(NULL, false));
+        } else {
+            ESP_LOGI(TAG, "Flash is writeable");
+        }
+    } else {
+        ESP_LOGE(TAG, "Failed to esp_flash_get_chip_write_protect (%s)", esp_err_to_name(err));
+        //httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error detecting flash write protection.");
+        return err;
+    }
 
-#include "esp_err.h"
-#include "esp_log.h"
+    // Erase the entire flash memory
 
-#include "esp_vfs.h"
-#include "esp_spiffs.h"
-#include "esp_http_server.h"
-#include <esp_netif.h>
+    /* Iterating over partitions */
+    ESP_LOGI(TAG, "----------------Iterate through partitions---------------");
+    uint32_t flash_erased_up_to = 0;
+    esp_partition_iterator_t it;
+    it = esp_partition_find(ESP_PARTITION_TYPE_ANY, ESP_PARTITION_SUBTYPE_ANY, NULL);
+    for (; it != NULL; it = esp_partition_next(it)) {
+        const esp_partition_t *part = esp_partition_get(it);
+        ESP_LOGI(TAG, "\tpartition type: 0x%x, subtype: 0x%x, offset: 0x%x, size: 0x%x, label: %s",
+                part->type, part->subtype, part->address, part->size, part->label);
+        if ( // we do not want to delete ourself, just now
+             ((part->type == transWARPpartition->type) && (part->label == transWARPpartition->label))
+             ||
+             // do not delete the phy_init partition to prevent sudden reboot
+             ((part->type == ESP_PARTITION_TYPE_DATA) && (part->subtype == 0x1))
+             ||
+             // do not delete the NVS partition because of the wifi config
+             ((part->type == ESP_PARTITION_TYPE_DATA) && (part->subtype == ESP_PARTITION_SUBTYPE_DATA_NVS))
+           ) {
+            ESP_LOGW(TAG, "\t\t don't delete");
+            continue;
+        }
+        err = esp_partition_erase_range(part, 0, part->size);
+        if (err != ESP_OK) {
+            ESP_LOGI(TAG, "Failed to esp_partition_erase_range: %s\n", esp_err_to_name(err));
+            return err;
+        }
+        flash_erased_up_to += part->size;
+    }
+    // Release the partition iterator to release memory allocated for it
+    esp_partition_iterator_release(it);
 
-/* Max length a file path can have on storage */
-#define FILE_PATH_MAX (ESP_VFS_PATH_MAX + CONFIG_SPIFFS_OBJ_NAME_LEN)
+    // Unprotect the entire flash
+    ESP_LOGI(TAG, "Unprotect entire flash");
+    esp_flash_region_t region;
+    region.offset = 0x0;
+    region.size = flash_size;
+    esp_flash_set_protected_region(NULL, &region, false);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to unprotect flash (%s)", esp_err_to_name(err));
+        //httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to unprotect flash");
+        return err;
+    }
 
-/* Max size of an individual file. Make sure this
- * value is same as that set in upload_script.html */
-#define MAX_FILE_SIZE   (200*1024) // 200 KB
-#define MAX_FILE_SIZE_STR "200KB"
+    // Erase flash begin
+    ESP_LOGI(TAG, "Erase flash up to first partition");
+    err = esp_flash_erase_region(NULL, 0x1000, 0x10000 - 0x1000);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to erase flash (%s)", esp_err_to_name(err));
+        //httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to erase flash");
+        return err;
+    }
 
-#define WARP_MORE_HARDWARE_BIN "warpAC011K_firmware_2_0_12_64033399_merged.bin"
-#include <esp_http_client.h>
-#include <esp_https_ota.h>
-#include <esp_ota_ops.h>
-#include <esp_partition.h>
+    if ((flash_size - flash_erased_up_to) > 0) {
+        // Erase end of flash
+        ESP_LOGI(TAG, "Erase flash after last partition");
+        err = esp_flash_erase_region(NULL, flash_erased_up_to, flash_size - flash_erased_up_to);
+        if (err != ESP_OK) {
+            ESP_LOGE(TAG, "Failed to erase flash (%s)", esp_err_to_name(err));
+            //httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to erase flash");
+            return err;
+        }
+    }
 
-#include "file_serving_common.h"
+    ESP_LOGI(TAG, "Done erase region");
 
-//#define OTA_URL "https://github.com/warp-more-hardware/esp32-firmware/releases/download/warpAC011K-2.0.12/warpAC011K_firmware_2_0_12_64033399_merged.bin"
-//char OTA_URL[256] = "https://github.com/warp-more-hardware/esp32-firmware/releases/download/warpAC011K-2.0.12/warpAC011K_firmware_2_0_12_64033399_merged.bin";
-//#define OTA_URL "http://192.168.188.79:8000/" WARP_MORE_HARDWARE_BIN
+    return ESP_OK;
+}
 
-bool backup_done = false;
-char clientIPaddress[INET6_ADDRSTRLEN] = "127.0.0.1";
+static esp_err_t ota_main(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "Got an OTA request");
 
-/* Scratch buffer size */
-#define SCRATCH_BUFSIZE  8192
+    ESP_LOGI(TAG, "I shall get the new firmware from: %s", OTA_URL);
 
-struct file_server_data {
-    /* Base path of file storage */
-    char base_path[ESP_VFS_PATH_MAX + 1];
+    //httpd_resp_set_hdr(req, "Connection", "close");
+    //httpd_resp_sendstr(req, "Post control value successfully");
+    httpd_resp_sendstr_chunk(req, "You triggered the firmware upgrade successfully.\r\n");
+    //httpd_resp_sendstr_chunk(req, NULL);
 
-    /* Scratch buffer for temporary storage during file transfer */
-    char scratch[SCRATCH_BUFSIZE];
-};
+    // http get the WARP firmware
+    esp_http_client_config_t config = {
+        .url = OTA_URL,
+        .crt_bundle_attach = esp_crt_bundle_attach,
+        .skip_cert_common_name_check = true,
+        //.event_handler = _http_event_handler,
+        .keep_alive_enable = true,
+        .buffer_size = 1024,
+    };
+    char* buffer = malloc(config.buffer_size);
+    config.user_data = buffer; // address of local buffer to get chunked response data
 
-//static const char *TAG = "file_server";
+    esp_http_client_handle_t client = esp_http_client_init(&config);
+    //esp_err_t err = esp_http_client_perform(client);
+    esp_err_t err;
+    if ((err = esp_http_client_open(client, 0)) != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to open HTTP connection: %s", esp_err_to_name(err));
+        free(buffer);
+        return err;
+    }
+
+    /* Content length of the request gives the size of the file being downloaded */
+    int firmware_length = esp_http_client_fetch_headers(client);
+    int remaining = firmware_length;
+    char progress[128];
+
+    if(firmware_length == 0) {
+        ESP_LOGE(TAG, "Error, firmware file size can not be 0!");
+        return ESP_ERR_INVALID_SIZE;
+    }
+    ESP_ERROR_CHECK(prepare_flash_for_WARP(req));
+
+    int data_read = 0;
+    int notify_interval = firmware_length / 10;
+    int notify_next = notify_interval;
+    do {
+        data_read = esp_http_client_read(client, buffer, config.buffer_size);
+
+        int bytes_to_write = (address + data_read) < transWARPpartition->address ? data_read : transWARPpartition->address - address;
+
+        /* Write buffer content to flash */
+        if ((address < transWARPpartition->address) || (address > (transWARPpartition->address + transWARPpartition->size))) {
+            //ESP_LOGI(TAG, "normal write at %x, %d bytes, remaining %d", address, bytes_to_write, remaining);
+            esp_err_t err = esp_flash_write(NULL, buffer, address, bytes_to_write);
+            if (err != ESP_OK) {
+                ESP_LOGE(TAG, "Failed to write flash at %x, %d bytes, remaining %d (%s)", address, bytes_to_write, remaining, esp_err_to_name(err));
+                free(buffer);
+                return err;
+            }
+        }
+        if (address - 0x1000 >= notify_next) {
+            sprintf(progress, "firmware flash success %d%%\r\n", (address - 0x1000) *100 / firmware_length);
+            ESP_LOGI(TAG, "%s", progress);
+            httpd_resp_sendstr_chunk(req, progress);
+            notify_next = address - ((address - 0x1000) % notify_interval) + notify_interval;
+        }
+        /* Keep track of remaining size of the file left to be uploaded */
+        address += data_read;
+        remaining -= data_read;
+
+    } while (data_read > 0);
+
+    ESP_LOGI(TAG, "HTTP Stream reader Status = %d, content_length = %"PRIu64,
+            esp_http_client_get_status_code(client),
+            esp_http_client_get_content_length(client));
+    esp_http_client_close(client);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Error: %s", esp_err_to_name(err));
+        free(buffer);
+        return err;
+    }
+
+    err = esp_http_client_cleanup(client);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Error: %s", esp_err_to_name(err));
+        free(buffer);
+        return err;
+    }
+
+    free(buffer);
+
+    ESP_LOGI(TAG, "File reception / flashing complete, restarting into the new firmware.");
+
+    httpd_resp_sendstr_chunk(req, "File reception / flashing complete, restarting into the new firmware.\r\n");
+    httpd_resp_sendstr_chunk(req, NULL);
+
+    vTaskDelay(3 * 1000 / portTICK_PERIOD_MS);
+
+    // reboot with new firmware and bootloader
+    esp_restart();
+
+    return ESP_OK;
+}
 
 void store_client_ip(httpd_req_t *req)
 {
@@ -794,12 +928,6 @@ static const char* get_path_from_uri(char *dest, const char *base_path, const ch
     return dest + base_pathlen;
 }
 
-
-#include "esp_partition.h"
-#include "esp_ota_ops.h"
-#include "esp_flash.h"
-#include "esp_system.h"
-
 /* Handler to boot back into the EN+ firmware */
 static esp_err_t back_to_ENplus(httpd_req_t *req)
 {
@@ -807,15 +935,7 @@ static esp_err_t back_to_ENplus(httpd_req_t *req)
 
     httpd_resp_sendstr_chunk(req, "<h1>OK, I'll switch back to the original EN+ firmware now.</h1>");
 
-    // Get the transWARPpartition that the currently running program was started from
-    const esp_partition_t *transWARPpartition = esp_ota_get_boot_partition();
-    if (transWARPpartition == NULL) {
-        ESP_LOGE(TAG, "Error getting transWARP boot partition");
-        return ESP_FAIL;
-    }
-
-    ESP_LOGI(TAG, "Running from transWARPpartition: label=%s, type=0x%x, subtype=0x%x, offset=0x%x, size=0x%x",
-            transWARPpartition->label, transWARPpartition->type, transWARPpartition->subtype, transWARPpartition->address, transWARPpartition->size);
+    ESP_ERROR_CHECK(get_transWARP_partition());
 
     const esp_partition_t *ENplusPartition = esp_ota_get_next_update_partition(transWARPpartition);
     if (ENplusPartition == NULL) {
@@ -848,7 +968,29 @@ static esp_err_t back_to_ENplus(httpd_req_t *req)
 /* Handler to check if flashing WARP is possible right now */
 static esp_err_t flash_warp_check(httpd_req_t *req)
 {
+    static bool flash_warp_check_already_running = false;
+	if (flash_warp_check_already_running) {
+        return ESP_OK;
+	}
+
+    ESP_LOGI(TAG, "set flash_warp_check_already_running = true");
+    flash_warp_check_already_running = true;
+
     ESP_LOGI(TAG, "A brave freedom warrior wants to flash a new WARP firmware.");
+
+    int hdr_len;
+
+    hdr_len = httpd_req_get_hdr_value_len(req, "Firmware-Url");
+    if ((hdr_len > 0) && (hdr_len < 255)) {
+        /* Copy null terminated value string into buffer */
+        if (httpd_req_get_hdr_value_str(req, "Firmware-Url", OTA_URL, ++hdr_len) == ESP_OK) {
+            ESP_LOGI(TAG, "Firmware-Url header content: %s", OTA_URL);
+        }
+    } else {
+        //return ESP_ERR_INVALID_ARG;
+        ESP_LOGI(TAG, "Firmware-Url header missing or too long.");
+        return ESP_OK;
+    }
 
     ESP_LOGI(TAG, "Erasing the FAT partition to indicate we are ready to go.");
     esp_partition_iterator_t it;
@@ -869,17 +1011,24 @@ static esp_err_t flash_warp_check(httpd_req_t *req)
     //httpd_resp_sendstr_chunk(req, NULL);
 
     /* Redirect onto root to see the updated page */
-    httpd_resp_set_status(req, "303 See Other");
-    httpd_resp_set_hdr(req, "Location", "/");
-#ifdef CONFIG_EXAMPLE_HTTPD_CONN_CLOSE_HEADER
-    httpd_resp_set_hdr(req, "Connection", "close");
-#endif
-    httpd_resp_sendstr(req, "Go back and give me the Firmware now!");
-    httpd_resp_send(req, NULL, 0);  // Response body can be empty
+    /* httpd_resp_set_status(req, "303 See Other"); */
+    /* httpd_resp_set_hdr(req, "Location", "/"); */
+    /* #ifdef CONFIG_EXAMPLE_HTTPD_CONN_CLOSE_HEADER */
+    /* httpd_resp_set_hdr(req, "Connection", "close"); */
+    /* #endif */
+    /* httpd_resp_sendstr(req, "Go back and give me the Firmware now!"); */
+    /* httpd_resp_send(req, NULL, 0);  // Response body can be empty */
 
     backup_available = false;
     ready_to_flash = true;
     ESP_ERROR_CHECK(ensure_transWARP_to_be_on_second_ota_partition());
+
+    ESP_ERROR_CHECK(ota_main(req));
+
+    vTaskDelay(3 * 1000 / portTICK_PERIOD_MS);
+
+    ESP_LOGI(TAG, "set flash_warp_check_already_running = false");
+    flash_warp_check_already_running = false;
 
     return ESP_OK;
 }
@@ -891,14 +1040,7 @@ static esp_err_t download_flash_backup(httpd_req_t *req)
 
     httpd_resp_set_type(req, "application/octet-stream");
 
-    // Get the transWARPpartition that the currently running program was started from
-    const esp_partition_t *transWARPpartition = esp_ota_get_running_partition();
-    if (transWARPpartition == NULL) {
-        ESP_LOGE(TAG, "Error getting running transWARPpartition");
-        return ESP_FAIL;
-    }
-    ESP_LOGI(TAG, "Running from transWARPpartition: label=%s, type=0x%x, subtype=0x%x, offset=0x%x, size=0x%x",
-            transWARPpartition->label, transWARPpartition->type, transWARPpartition->subtype, transWARPpartition->address, transWARPpartition->size);
+    ESP_ERROR_CHECK(get_transWARP_partition());
 
     /* Iterating over partitions */
     ESP_LOGI(TAG, "Serving the Backup");
@@ -1097,8 +1239,6 @@ static esp_err_t download_get_handler(httpd_req_t *req)
 /* Handler to upload a file onto the server */
 static esp_err_t upload_post_handler(httpd_req_t *req)
 {
-    int address = 0x1000; //start at the usual offset
-
     ESP_LOGI(TAG, "Receiving firmware ...");
 
     /* Content length of the request gives the size of the file being uploaded */
@@ -1111,125 +1251,11 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     }
 
     ESP_ERROR_CHECK(ensure_transWARP_to_be_on_second_ota_partition());
+    ESP_ERROR_CHECK(prepare_flash_for_WARP(req));
 
     /* Retrieve the pointer to scratch buffer for temporary storage */
     char *buf = ((struct file_server_data *)req->user_ctx)->scratch;
     int received;
-
-    // Get the size of the flash
-    uint32_t flash_size;
-    esp_err_t err = esp_flash_get_size(NULL, &flash_size);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Error detecting flash size. (%s)", esp_err_to_name(err));
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error detecting flash size.");
-        return err;
-    }
-
-    // Get the transWARPpartition that the currently running program was started from
-    const esp_partition_t *transWARPpartition = esp_ota_get_running_partition();
-    if (transWARPpartition == NULL) {
-        ESP_LOGE(TAG, "Error getting running transWARPpartition");
-        return ESP_FAIL;
-    }
-    ESP_LOGI(TAG, "Running from transWARPpartition: label=%s, type=0x%x, subtype=0x%x, address=0x%x, size=0x%x, erase_size=0x%x",
-            transWARPpartition->label, transWARPpartition->type, transWARPpartition->subtype, transWARPpartition->address, transWARPpartition->size, transWARPpartition->erase_size);
-
-    /* File cannot be larger than a limit */
-    if (req->content_len > transWARPpartition->address - address) {
-        // address holds the offset (usually 0x1000), and the transWARPpartition should 
-        // by now be the second ota partition of the vendor firmware.
-        // That means, we have the space up to 0x290000, but starting at 0x1000. 
-        ESP_LOGE(TAG, "File too large : %d bytes", req->content_len);
-        ESP_LOGE(TAG, "The firmware is too big! File size: %d, but has to be less than %d bytes.", 
-                req->content_len, transWARPpartition->address - address);
-        /* Respond with 400 Bad Request */
-        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "The firmware file size is too big!");
-        /* Return failure to close underlying connection else the
-         * incoming file content will keep the socket busy */
-        return ESP_ERR_INVALID_SIZE;
-    }
-
-    bool write_protected;
-    err = esp_flash_get_chip_write_protect(NULL, &write_protected);
-    if (err == ESP_OK) {
-        if (write_protected) {
-            ESP_LOGI(TAG, "Flash is write protected, unlocking it...");
-            ESP_ERROR_CHECK(esp_flash_set_chip_write_protect(NULL, false));
-        } else {
-            ESP_LOGI(TAG, "Flash is writeable");
-        }
-    } else {
-        ESP_LOGE(TAG, "Failed to esp_flash_get_chip_write_protect (%s)", esp_err_to_name(err));
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error detecting flash write protection.");
-        return err;
-    }
-
-    // Erase the entire flash memory
-
-    /* Iterating over partitions */
-    ESP_LOGI(TAG, "----------------Iterate through partitions---------------");
-    uint32_t flash_erased_up_to = 0;
-    esp_partition_iterator_t it;
-    it = esp_partition_find(ESP_PARTITION_TYPE_ANY, ESP_PARTITION_SUBTYPE_ANY, NULL);
-    for (; it != NULL; it = esp_partition_next(it)) {
-        const esp_partition_t *part = esp_partition_get(it);
-        ESP_LOGI(TAG, "\tpartition type: 0x%x, subtype: 0x%x, offset: 0x%x, size: 0x%x, label: %s",
-                part->type, part->subtype, part->address, part->size, part->label);
-        if ( // we do not want to delete ourself, just now
-             ((part->type == transWARPpartition->type) && (part->label == transWARPpartition->label))
-             ||
-             // do not delete the phy_init partition to prevent sudden reboot
-             ((part->type == ESP_PARTITION_TYPE_DATA) && (part->subtype == 0x1))
-             ||
-             // do not delete the NVS partition because of the wifi config
-             ((part->type == ESP_PARTITION_TYPE_DATA) && (part->subtype == ESP_PARTITION_SUBTYPE_DATA_NVS))
-           ) {
-            ESP_LOGW(TAG, "\t\t don't delete");
-            continue;
-        }
-        err = esp_partition_erase_range(part, 0, part->size);
-        if (err != ESP_OK) {
-            ESP_LOGI(TAG, "Failed to esp_partition_erase_range: %s\n", esp_err_to_name(err));
-            return err;
-        }
-        flash_erased_up_to += part->size;
-    }
-    // Release the partition iterator to release memory allocated for it
-    esp_partition_iterator_release(it);
-
-    // Unprotect the entire flash
-    ESP_LOGI(TAG, "Unprotect entire flash");
-    esp_flash_region_t region;
-    region.offset = 0x0;
-    region.size = flash_size;
-    esp_flash_set_protected_region(NULL, &region, false);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to unprotect flash (%s)", esp_err_to_name(err));
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to unprotect flash");
-        return err;
-    }
-
-    // Erase flash begin
-    ESP_LOGI(TAG, "Erase flash up to first partition");
-    err = esp_flash_erase_region(NULL, 0x1000, 0x10000 - 0x1000);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to erase flash (%s)", esp_err_to_name(err));
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to erase flash");
-        return err;
-    }
-
-    if ((flash_size - flash_erased_up_to) > 0) {
-        // Erase end of flash
-        ESP_LOGI(TAG, "Erase flash after last partition");
-        err = esp_flash_erase_region(NULL, flash_erased_up_to, flash_size - flash_erased_up_to);
-        if (err != ESP_OK) {
-            ESP_LOGE(TAG, "Failed to erase flash (%s)", esp_err_to_name(err));
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to erase flash");
-            return err;
-        }
-    }
-
-    ESP_LOGI(TAG, "Done erase region");
 
     while (remaining > 0) {
 
@@ -1244,11 +1270,6 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
                 /* Retry if timeout occurred */
                 continue;
             }
-
-            /* // In case of unrecoverable error, */
-            /* // close and delete the unfinished file */
-            /* fclose(fd); */
-            /* unlink(filepath); */
 
             ESP_LOGE(TAG, "File reception failed!");
             /* Respond with 500 Internal Server Error */
@@ -1276,15 +1297,6 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     ESP_LOGI(TAG, "File reception / flashing complete, restarting into the new firmware.");
 
     httpd_resp_sendstr_chunk(req, NULL);
-
-    /* /1* Redirect onto root to see the updated file list *1/ */
-    /* httpd_resp_set_status(req, "303 See Other"); */
-    /* httpd_resp_set_hdr(req, "Location", "/"); */
-/* //#ifdef CONFIG_EXAMPLE_HTTPD_CONN_CLOSE_HEADER */
-    /* httpd_resp_set_hdr(req, "Connection", "close"); */
-/* //#endif */
-    /* httpd_resp_sendstr(req, "File uploaded successfully"); */
-    /* httpd_resp_send(req, NULL, 0);  // Response body can be empty */
 
     esp_restart();
 
@@ -1333,7 +1345,7 @@ esp_err_t start_file_server(const char *base_path)
     };
     httpd_register_uri_handler(server, &flash_backup_download);
 
-    /* URI handler for getting a flash backup */
+    /* URI handler for going back to EN+ */
     httpd_uri_t flash_back_to_ENplus = {
         .uri       = "/AC011K_ENplus_flash_back_to_slavery",
         .method    = HTTP_GET,
@@ -1361,6 +1373,15 @@ esp_err_t start_file_server(const char *base_path)
     };
     httpd_register_uri_handler(server, &file_upload);
 
+    /* URI handler for initiating the WARP firmware download */
+    httpd_uri_t firmware_download = {
+        .uri       = "/AC011K_flash_WARP_firmware.bin.post",
+        .method    = HTTP_POST,
+        .handler   = ota_main,
+        .user_ctx  = server_data    // Pass server data as context
+    };
+    httpd_register_uri_handler(server, &firmware_download);
+
     /* URI handler for getting files */
     httpd_uri_t file_download = {
         .uri       = "/*",  // Match all URIs of type /path/to/file
@@ -1371,60 +1392,6 @@ esp_err_t start_file_server(const char *base_path)
     httpd_register_uri_handler(server, &file_download);
 
     return ESP_OK;
-}
-
-
-void ota_task(void *pvParameters)
-{
-    esp_http_client_config_t config = {
-        .url = OTA_URL,
-        //.cert_pem = (char *)server_cert_pem_start,
-    };
-    esp_err_t ret = esp_https_ota(&config);
-    if (ret == ESP_OK) {
-        esp_restart();
-    } else {
-        // handle OTA update error
-    }
-}
-
-void ota_update()
-{
-    xTaskCreate(&ota_task, "ota_task", 8192, NULL, 5, NULL);
-}
-
-void ota_main()
-{
-    esp_err_t ret;
-    esp_ota_handle_t ota_handle;
-    const esp_partition_t *ota_partition = NULL;
-
-    // initialize OTA client
-    ret = esp_ota_begin(&ota_partition, OTA_SIZE_UNKNOWN, &ota_handle);
-    if (ret != ESP_OK) {
-        // handle OTA begin error
-    }
-
-    // download and install new firmware
-    ota_update();
-
-    // wait for OTA update to complete
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
-
-    // finalize OTA update
-    ret = esp_ota_end(ota_handle);
-    if (ret != ESP_OK) {
-        // handle OTA end error
-    }
-
-    // set boot partition to the new firmware
-    ret = esp_ota_set_boot_partition(ota_partition);
-    if (ret != ESP_OK) {
-        // handle OTA set boot partition error
-    }
-
-    // reboot with new firmware and bootloader
-    esp_restart();
 }
 
 
@@ -1454,7 +1421,6 @@ void app_main(void)
     ESP_LOGI(TAG, "OTA example app_main start");
 
     xTaskCreate(&esp_wifi_connect_task, "wifi_connect_retry", 3072, NULL, 5, NULL);
-    //xTaskCreate(&simple_ota_task, "ota_task", 8192, NULL, 5, NULL);
 
     ESP_LOGI(TAG, "Ready");
 }
