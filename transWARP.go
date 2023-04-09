@@ -14,7 +14,6 @@ import (
     "io"
     "io/ioutil"
     "os"
-    //"flag"
 
     flag "github.com/spf13/pflag"
     "github.com/cpuchip/zeroconf/v2"
@@ -29,16 +28,11 @@ var (
     WARPfirmware_bin string
 )
 
-type Transform struct {
-    Mac string
-    Done map[string]bool 
-}
-
 type DeviceInfo struct {
     // The Mesh-Node-Mac is not in the JSON that the EN+ charger gives us, but we just add it for convinience.
     MeshNodeMac  string
     // some fields are just ignored because of missing relevance
-    ChargerSN    string `json:"charger_sn"`       // 'SN12345678901234'
+    ChargerSN    string `json:"charger_sn"`       // '12345678901234'
     ChargerVer   string `json:"charger_version"`  // 'V1.1.538'
     DevCode      int    `json:"charger_dev_code"` // 37
     DevName      string `json:"charger_dev_name"` // 'AC011K-AE-25'
@@ -73,7 +67,7 @@ func DownloadFile(mac string, filepath string, url string) error {
 	defer out.Close()
 
 	// Download the file
-    log.Printf("Download %s\n", url)
+    log.Printf("[%s] Download %s\n", mac, url)
 	resp, err := http.Get(url)
 	if err != nil { return err }
 	defer resp.Body.Close()
@@ -82,7 +76,7 @@ func DownloadFile(mac string, filepath string, url string) error {
 	_, err = io.Copy(out, resp.Body)
 	if err != nil { return err }
 
-	log.Printf("[%s] Backup %s downloaded and saved\n", mac, filepath)
+	log.Printf("[%s] Backup '%s' downloaded and saved\n", mac, filepath)
 	return nil
 }
 
@@ -145,7 +139,7 @@ func ENplus2transWARP(ip string, port int, mac string) {
     }
 
 	// Check if device info file already exists
-    json_filepath := "AC011K_" + device_info.MeshNodeMac + "_device_info.json"
+    json_filepath := "AC011K_" + mac + "_device_info.json"
     // MeshNodeMac:1c9dc25743f8 ChargerSN:10052109254216 ChargerVer:V1.2.460 DevCode:37 DevName:AC011K-AE-25 GatewayVer:V3.2.589 Ip:192.168.188.179 MeshID:54573238353e Name:ENPLUS_SN10052109254216
 	if _, err := os.Stat(json_filepath); err == nil {
 		log.Printf("[%s] Device info JSON file (%s) already exists, skip saving\n", mac, json_filepath)
@@ -213,14 +207,22 @@ func TransWARP2WARP(ip string, port int, info_text []string) {
         return
     }
 
+	// Read device info from file
+    json_filepath := "AC011K_" + info["mac"] + "_device_info.json"
+    file, err := ioutil.ReadFile(json_filepath)
+    if err != nil {
+        log.Printf("[%s] unable to get device info (%s) (%s)\n", info["mac"], json_filepath, err)
+    }
+    var device_info DeviceInfo
+    _ = json.Unmarshal([]byte(file), &device_info)
+
     if !alreadyDone[info["mac"]]["TransWARP2WARP_BACKUP"] {
         if len(info["BACKUP"]) > 0 {
             if alreadyDone[info["mac"]] == nil { alreadyDone[info["mac"]] = make(map[string]bool) }
             alreadyDone[info["mac"]]["TransWARP2WARP_BACKUP"] = true
 
             url := fmt.Sprintf("http://%v:%v%s", ip, port, info["BACKUP"])
-            backupFileName := "AC011K_" + info["mac"] + "_firmware_backup.bin"
-            //backupFileName := "AC011K_" + info["mac"] + "_" + info["name"] + "_" + info["gateway_version"] + "_" + info["charger_version"] + "_firmware_backup.bin"
+            backupFileName := "AC011K_" + info["mac"] + "_" + device_info.Name + "_" + device_info.GatewayVer + "_" + device_info.ChargerVer + "_firmware_backup.bin"
 
             err := DownloadFile(info["mac"], backupFileName, url)
             if err != nil {
@@ -261,7 +263,6 @@ func TransWARP2WARP(ip string, port int, info_text []string) {
                 return
             } else {
                 defer resp.Body.Close()
-                //bodyText, err := io.ReadAll(resp.Body)
                 scanner := bufio.NewScanner(resp.Body)
                 for scanner.Scan() {
                     chunk := scanner.Bytes()
@@ -273,9 +274,9 @@ func TransWARP2WARP(ip string, port int, info_text []string) {
                     alreadyDone[info["mac"]]["TransWARP2WARP_GET"] = false
                     return
                 }
-                log.Printf("[%s] transWARP -> WARP transition done. Connect to the new WiFi named AC011K-1234567890, configure your box and enjoy!\n", info["mac"])
+                log.Printf("[%s] transWARP -> WARP transition done.\n\nConnect to the new WiFi named AC011K-%s, then configure your WARP box at http://10.0.0.1/ and enjoy!\n\n", info["mac"], device_info.ChargerSN)
             }
-            //TODO
+            //TODO trigger twice if we need to move transWARP out of the way?
             //alreadyDone[info["mac"]]["TransWARP2WARP_GET"] = false
         }
     }
@@ -340,7 +341,7 @@ func spinner() {
 
 func loggingHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Serving %s %s %s", r.RemoteAddr, r.Method, r.URL)
+		log.Printf("[WARNING, this is critical, do not interrupt!] Serving %s %s %s", r.RemoteAddr, r.Method, r.URL)
 		h.ServeHTTP(w, r)
 	})
 }
@@ -370,7 +371,7 @@ func start_httpd(ip string) {
     // save the port number as string in my_http_port
     my_http_port = strconv.Itoa(listener.Addr().(*net.TCPAddr).Port)
 
-    log.Printf("Start HTTP server to serve '%s/' which is now accessable at http://%s:%s/%s/\n", cwd, ip, my_http_port, ip)
+    log.Printf("[http://%s:%s/%s/] Start HTTP server to serve '%s/'\n", ip, my_http_port, ip, cwd)
 
 	err = http.Serve(listener, nil)
 	if err != nil {
