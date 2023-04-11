@@ -1,0 +1,905 @@
+D (1970-01-01 00:04:11) [OCPP_SRV, 3890]: ocpp_sevice_ntc_evt: 8, chan:0,sts:5
+D (1970-01-01 00:04:11) [OCPP_SRV, 2859]: chan:0 workStatus:1 , workdata->rpt_time:1
+D (1970-01-01 00:04:13) [EN_MESH, 1339]: Root mlink_httpd_read, addrs_num: 1, addrs_list: 1c:9d:c2:57:43:f8, size: 30, data: {"request": "get_device_info"}
+D (1970-01-01 00:04:13) [EN_MESH, 1186]: Node receive, addr: 1c:9d:c2:57:43:f8, size: 30, data: {"request": "get_device_info"}
+D (1970-01-01 00:04:13) [EN_MESH, 1267]: Root receive, addr: 1c:9d:c2:57:43:f8, size: 469, data: {"ip":"192.168.188.179","tid":"5","name":"ENPLUS_SN12345678901234","mesh_id":"54573238353e","version":"v1.0","idf_version":"v3.2-130-g8e51f7e23","mdf_version":"v1.1","mlink_trigger":0,"mlink_version":2,"group_name":"--","pos_info":"","charger_sn":"SN12345678901234","charger_version":"V1.2.460","gateway_sn":"ESP32GATEWAY001","gateway_version":"V3.2.589","charger_dev_name":"AC011K-AE-25","charger_dev_code":37,"srv_link_status":0,"status_msg":"MDF_OK","status_code":0}
+D (1970-01-01 00:04:14) [mupgrade_root, 162]: firmware, name: transWARP.bin, storepath:/spiflash/firmware/transWARP.bin
+D (1970-01-01 00:04:14) [mupgrade_root, 92]: HTTP_EVENT_ON_CONNECTED
+D (1970-01-01 00:04:14) [mupgrade_root, 98]: HTTP_EVENT_ON_HEADER, key=Accept-Ranges, value=bytes
+D (1970-01-01 00:04:14) [mupgrade_root, 98]: HTTP_EVENT_ON_HEADER, key=Content-Length, value=1062576
+D (1970-01-01 00:04:14) [mupgrade_root, 98]: HTTP_EVENT_ON_HEADER, key=Content-Type, value=application/octet-stream
+D (1970-01-01 00:04:14) [mupgrade_root, 98]: HTTP_EVENT_ON_HEADER, key=Last-Modified, value=Wed, 05 Apr 2023 17:29:01 GMT
+D (1970-01-01 00:04:14) [mupgrade_root, 98]: HTTP_EVENT_ON_HEADER, key=Date, value=Tue, 11 Apr 2023 15:58:29 GMT
+D (1970-01-01 00:04:14) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=512
+I (1970-01-01 00:04:14) [esp_http_file, 53]: file size is: 1062576,Open file /spiflash/firmware/transWARP.bin start...
+I (1970-01-01 00:04:14) [esp_http_file, 63]: Please Wait. This may take time
+D (1970-01-01 00:04:14) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:14) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1536
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=824
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1224
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:15) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+W (1970-01-01 00:04:16) [PRIV_COMM, 2033]: Rx(cmd_02 len:135) :  FA 03 00 00 02 4B 7D 00 53 4E 31 30 30 35 32 31 30 39 32 35 34 32 31 36 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 25 D1 00 41 43 30 31 31 4B 2D 41 45 2D 32 35 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 31 2E 32 2E 34 36 30 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 3C 00 F0 00 00 00 00 00 A0 00 00 00 02 E3
+D (1970-01-01 00:04:16) [OCPP_SRV, 3890]: ocpp_sevice_ntc_evt: 2, chan:0,sts:5
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:16) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:17) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:18) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:19) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+E (1970-01-01 00:04:20) [TRANSPORT_WS, 111]: Error connect to the server
+E (1970-01-01 00:04:20) [EN_WSS, 351]: chan[0] connected to ws://192.168.188.147:8080/steve/websocket/CentralSystemService/SN12345678901234 err xxxxxxxxxxxxx
+D (1970-01-01 00:04:20) [EN_WSS, 109]: Reconnect after 5 s
+D (1970-01-01 00:04:20) [OCPP_SRV, 3960]: ocpp_sevice_net_sts_rpt: chan:0 sts:4
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+W (1970-01-01 00:04:20) [PRIV_COMM, 1875]: Tx(cmd_AA len:15) :  FA 03 00 00 AA 25 05 00 18 12 01 00 03 79 C4
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1636
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=412
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:20) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:21) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+W (1970-01-01 00:04:21) [PRIV_COMM, 2033]: Rx(cmd_08 len:117) :  FA 03 00 00 08 4C 6B 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 08 00 00 00 00 01 00 00 00 00 00 00 03 00 00 00 03 00 00 00 00 00 00 00 00 00 00 00 EB 08 00 00 00 00 00 00 00 00 00 00 00 00 00 75 79
+D (1970-01-01 00:04:22) [OCPP_SRV, 3890]: ocpp_sevice_ntc_evt: 8, chan:0,sts:4
+D (1970-01-01 00:04:22) [OCPP_SRV, 2859]: chan:0 workStatus:1 , workdata->rpt_time:1
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:22) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:23) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:24) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [EN_WSS, 435]: wss_start_connect_chan:0,  not found and add to list tail!
+D (1970-01-01 00:04:25) [EN_WSS, 443]: wss_start_connect_chan:0,  add to list tail OK, size:1!
+D (1970-01-01 00:04:25) [EN_WSS, 295]: wss_connect_list get head chan:0 ok!
+D (1970-01-01 00:04:25) [EN_WSS, 319]: wss_connect_chan_task get head chan:0 wss_clients[0]
+D (1970-01-01 00:04:25) [EN_WSS, 338]: wss_clients[0]->chan:0,status:5
+D (1970-01-01 00:04:25) [OCPP_SRV, 3960]: ocpp_sevice_net_sts_rpt: chan:0 sts:5
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+W (1970-01-01 00:04:25) [PRIV_COMM, 1875]: Tx(cmd_AA len:15) :  FA 03 00 00 AA 26 05 00 18 12 01 00 03 39 D1
+I (1970-01-01 00:04:25) [EN_WSS, 342]: chan[0] connecting to ws://192.168.188.147:8080/steve/websocket/CentralSystemService/SN12345678901234 >>>>>>>>>>>>
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:25) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=612
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1436
+E (1970-01-01 00:04:26) [PRIV_COMM, 1623]: hw fifo overflow
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:26) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1036
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1436
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1624
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:27) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:28) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:28) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:28) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:28) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:28) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:28) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:28) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:28) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:28) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=496
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1436
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=116
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:29) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:30) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:30) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=804
+D (1970-01-01 00:04:30) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1436
+D (1970-01-01 00:04:30) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1856
+D (1970-01-01 00:04:30) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:30) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:30) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:30) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:31) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+W (1970-01-01 00:04:31) [PRIV_COMM, 2033]: Rx(cmd_08 len:117) :  FA 03 00 00 08 4E 6B 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 08 00 00 00 00 01 00 00 00 00 00 00 03 00 00 00 03 00 00 00 00 00 00 00 00 00 00 00 F3 08 00 00 00 00 00 00 00 00 00 00 00 00 00 FC 5D
+D (1970-01-01 00:04:31) [OCPP_SRV, 3890]: ocpp_sevice_ntc_evt: 8, chan:0,sts:5
+D (1970-01-01 00:04:31) [OCPP_SRV, 2859]: chan:0 workStatus:1 , workdata->rpt_time:1
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:32) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=2048
+D (1970-01-01 00:04:33) [mupgrade_root, 101]: HTTP_EVENT_ON_DATA, len=1712
+I (1970-01-01 00:04:33) [esp_http_file, 80]: Connection closed,all data received
+I (1970-01-01 00:04:33) [esp_http_file, 100]: http client download end,file_size:1062576,total_size:1062576
+D (1970-01-01 00:04:34) [mupgrade_root, 107]: HTTP_EVENT_DISCONNECTED
+D (1970-01-01 00:04:34) [mupgrade_root, 107]: HTTP_EVENT_DISCONNECTED
+I (1970-01-01 00:04:34) [esp_http_file, 111]: download file:/spiflash/firmware/transWARP.bin succeeded!
+D (1970-01-01 00:04:34) [mupgrade_root, 179]: file /spiflash/firmware/transWARP.bin download ok, file size:1062576!
+I (1970-01-01 00:04:34) [mlink_httpd, 448]: mlink_httpd->addrs_num:1, path:/spiflash/firmware/transWARP.bin
+I (1970-01-01 00:04:34) [mlink_httpd, 460]: mlink_ota_send_task idx: 0, addr: 1c:9d:c2:57:43:f8
+I (1970-01-01 00:04:34) [mlink_httpd, 471]: mupgrade_firmware_inner_send OK!,Spend time: 0s
+I (1970-01-01 00:04:34) [mlink_httpd, 474]: Now upgrade roo self!!
+D (1970-01-01 00:04:34) [mupgrade_root, 607]: get ota update partition addr: 0x290000!
+D (1970-01-01 00:04:35) [mupgrade_root, 624]: now update,Please wait a moment!
+W (1970-01-01 00:04:36) [PRIV_COMM, 2033]: Rx(cmd_02 len:135) :  FA 03 00 00 02 4F 7D 00 53 4E 31 30 30 35 32 31 30 39 32 35 34 32 31 36 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 25 D1 00 41 43 30 31 31 4B 2D 41 45 2D 32 35 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 31 2E 32 2E 34 36 30 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 3C 00 F0 00 00 00 00 00 A0 00 00 00 00 13
+D (1970-01-01 00:04:36) [OCPP_SRV, 3890]: ocpp_sevice_ntc_evt: 2, chan:0,sts:5
+D (1970-01-01 00:04:39) [mupgrade_root, 658]: ota update partition addr: 0x290000!
+W (1970-01-01 00:04:41) [mupgrade_root, 747]: Prepare to restart system after 5s!
+W (1970-01-01 00:04:42) [PRIV_COMM, 2033]: Rx(cmd_08 len:117) :  FA 03 00 00 08 50 6B 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 08 00 00 00 00 01 00 00 00 00 00 00 03 00 00 00 03 00 00 00 00 00 00 00 00 00 00 00 EE 08 00 00 00 00 00 00 00 00 00 00 00 00 00 5D A9
+D (1970-01-01 00:04:42) [OCPP_SRV, 3890]: ocpp_sevice_ntc_evt: 8, chan:0,sts:5
+D (1970-01-01 00:04:42) [OCPP_SRV, 2859]: chan:0 workStatus:1 , workdata->rpt_time:1
+E (1970-01-01 00:04:44) [TRANSPORT_WS, 111]: Error connect to the server
+E (1970-01-01 00:04:44) [EN_WSS, 351]: chan[0] connected to ws://192.168.188.147:8080/steve/websocket/CentralSystemService/SN12345678901234 err xxxxxxxxxxxxx
+D (1970-01-01 00:04:44) [EN_WSS, 109]: Reconnect after 5 s
+D (1970-01-01 00:04:44) [OCPP_SRV, 3960]: ocpp_sevice_net_sts_rpt: chan:0 sts:4
+W (1970-01-01 00:04:44) [PRIV_COMM, 1875]: Tx(cmd_AA len:15) :  FA 03 00 00 AA 27 05 00 18 12 01 00 03 F8 1D
+I (1970-01-01 00:04:46) [mwifi, 86]: Parent is disconnected,parent_bssid:10:9a:dd:8b:01:4b, reason: 8,
+W (1970-01-01 00:04:46) [EN_MESH, 1514]: Parent is disconnected on station interface
+ets Jul 29 2019 12:21:46
+
+rst:0xc (SW_CPU_RESET),boot:0x17 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0018,len:4
+load:0x3fff001c,len:848
+ho 0 tail 12 room 4
+load:0x40078000,len:9356
+load:0x40080400,len:6312
+entry 0x4008069c
+I (425) cpu_start: Pro cpu up.
+I (425) cpu_start: Starting app cpu, entry point is 0x40081378
+I (0) cpu_start: App cpu up.
+I (439) cpu_start: Pro cpu start user code
+I (439) cpu_start: cpu freq: 160000000 Hz
+I (439) cpu_start: Application information:
+I (444) cpu_start: Project name:     transWARP
+I (449) cpu_start: App version:      v0.1-dirty
+I (454) cpu_start: Compile time:     Apr  5 2023 19:28:52
+I (461) cpu_start: ELF file SHA256:  c22e62472258d713...
+I (467) cpu_start: ESP-IDF:          v5.1-dev-3797-gaf805df3cb-dirty
+I (474) cpu_start: Min chip rev:     v0.0
+I (478) cpu_start: Max chip rev:     v3.99
+I (483) cpu_start: Chip rev:         v3.0
+I (488) heap_init: Initializing. RAM available for dynamic allocation:
+I (495) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM
+I (501) heap_init: At 3FFB83F0 len 00027C10 (159 KiB): DRAM
+I (507) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM
+I (514) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM
+I (520) heap_init: At 400955E8 len 0000AA18 (42 KiB): IRAM
+I (528) spi_flash: detected chip: gd
+I (531) spi_flash: flash io: dio
+I (535) app_start: Starting scheduler on CPU0
+I (540) app_start: Starting scheduler on CPU1
+I (540) main_task: Started on CPU0
+I (550) main_task: Calling app_main()
+I (600) transWARP: Initialize the FAT file system
+I (600) transWARP: Mounted FAT file system: /fat
+I (600) transWARP: Initialize WiFi
+W (610) wifi: [pp.c,3481] wifi driver task: 3ffc60e8, prio:23, stack:6656, core=0
+W (640) wifi: [ieee80211_ioctl.c,2105] wifi firmware version: 438175b
+W (640) wifi: [ieee80211_ioctl.c,2106] wifi certification version: v7.0
+W (640) wifi: [ieee80211_ioctl.c,2107] config NVS flash: enabled
+W (640) wifi: [ieee80211_ioctl.c,2108] config nano formating: disabled
+W (650) wifi: [esf_buf.c,423] Init data frame dynamic rx buffer num: 32
+W (660) wifi: [esf_buf.c,430] Init management frame dynamic rx buffer num: 32
+W (660) wifi: [esf_buf.c,437] Init management short buffer num: 32
+W (670) wifi: [esf_buf.c,455] Init dynamic tx buffer num: 32
+W (680) wifi: [wdev.c,2334] Init static rx buffer size: 1600
+W (680) wifi: [wdev.c,2341] Init static rx buffer num: 10
+W (690) wifi: [wdev.c,2342] Init dynamic rx buffer num: 32
+I (690) wifi_init: rx ba win: 6
+I (690) wifi_init: tcpip mbox: 32
+I (700) wifi_init: udp mbox: 6
+I (700) wifi_init: tcp mbox: 6
+I (710) wifi_init: tcp tx win: 5744
+I (710) wifi_init: tcp rx win: 5744
+I (710) wifi_init: tcp mss: 624
+I (720) wifi_init: WiFi IRAM OP enabled
+I (720) wifi_init: WiFi RX IRAM OP enabled
+W (730) wifi: [pm.c,3526] Set ps type: 0
+
+I (740) phy_init: phy_version 4670,719f9f6,Feb 18 2021,17:07:07
+W (740) phy_init: failed to load RF calibration data (0xffffffff), falling back to full calibration
+W (1240) wifi: [hal_mac.c,606] WDEVBBRXHUNG:0xc00000f0, en:1, timer:240(3840 us)
+W (1240) wifi: [hal_mac.c,608] WDEVBBTXHUNG:0x800000f0, en:1, timer:240(3840 us)
+W (1240) wifi: [hal_mac.c,610] WDEVBBCCAHUNG:0x800000f0, en:1, timer:240(3840 us)
+W (1250) wifi: [hal_mac.c,615] WDEVHUNGRECOVER:0xffff0fff, rxHungRecover[en:1, timer:32767 cycles(409 us)], txHungRecover[en:0, timer:4095 cycles(51 us)]
+W (1260) wifi: [ieee80211.c,438] mode : null
+I (1270) transWARP: Looking for WiFi config
+I (1270) transWARP: Found Wifi configuration in NVS flash.
+I (1280) transWARP: SSID: *
+I (1280) transWARP: Pass: *
+W (1290) wifi: [ieee80211.c,478] mode : sta (1c:9d:c2:57:43:f8) + softAP (1c:9d:c2:57:43:f9)
+W (1300) wifi: [ieee80211_sta.c,3014] enable tsf
+W (1300) wifi: [ieee80211_power.c,111] Total power save buffer number: 16
+W (1310) wifi: [ieee80211_ets.c,89] Init max length of beacon: 752/752
+W (1310) wifi: [ieee80211_ets.c,89] Init max length of beacon: 752/752
+I (1410) esp_netif_lwip: DHCP server started on interface WIFI_AP_DEF with IP: 192.168.4.1
+W (1440) wifi: [ieee80211_power.c,111] Total power save buffer number: 16
+I (1440) esp_netif_lwip: DHCP server started on interface WIFI_AP_DEF with IP: 192.168.4.1
+I (1440) transWARP: WIFI_MODE_AP started. SSID:transWARP with no password.
+W (1490) wifi: [ieee80211_ht.c,1986] ap channel adjust o:1,1 n:13,2
+W (1490) wifi: [ieee80211_ht.c,2089] new:<13,0>, old:<1,1>, ap:<13,2>, sta:<13,0>, prof:1
+W (2220) wifi: [ieee80211_sta.c,204] state: init -> auth (b0)
+W (2230) wifi: [ieee80211_sta.c,204] state: auth -> assoc (0)
+W (2230) wifi: [ieee80211_sta.c,204] state: assoc -> run (10)
+W (2250) wifi: [wl_cnx.c,3087] connected with *, aid = 18, channel 13, BW20, bssid = 10:9a:dd:8b:01:4b
+W (2250) wifi: [wl_cnx.c,3097] security: WPA2-PSK, phy: bgn, rssi: -63
+W (2260) wifi: [pm.c,3250] pm start, type: 0
+
+W (2300) wifi: [pm.c,491] AP's beacon interval = 102400 us, DTIM period = 3
+I (3270) esp_netif_handlers: sta ip: 192.168.188.179, mask: 255.255.255.0, gw: 192.168.188.1
+I (3270) transWARP: IP_EVENT_STA_GOT_IP IP:192.168.188.179
+I (4450) transWARP: Mesh-Node-Mac: 1c9dc25743f8
+I (4450) transWARP: mdns hostname set to: [transWARP]
+I (4460) transWARP: Initialize the file server
+I (4460) transWARP: Starting HTTP Server on port: 80
+I (4460) transWARP: OTA example app_main start
+I (4460) transWARP: Ready
+I (4460) main_task: Returned from app_main()
+I (6910) transWARP: set flash_warp_check_already_running = true
+I (6910) transWARP: A brave freedom warrior wants to flash a new WARP firmware.
+I (6910) transWARP: Firmware-Url header content: http://192.168.188.79:62737/192.168.188.79/build/warpAC011K_firmware_2_0_12_642fb99d_ecf213009b8ad57_merged.bin
+I (6920) transWARP: Erasing the FAT partition to indicate we are ready to go.
+I (6930) transWARP: 	partition type: 0x1, subtype: 0x81, offset: 0x510000, size: 0x2e7000, label: storage
+I (9620) transWARP: Running from partition: label=ota_1, type=0x0, subtype=0x11, offset=0x290000, size=0x280000
+I (9620) transWARP: All good, transWARP is not running from the first OTA partition.
+I (9670) transWARP: Got an OTA request
+I (9670) transWARP: I shall get the new firmware from: http://192.168.188.79:62737/192.168.188.79/build/warpAC011K_firmware_2_0_12_642fb99d_ecf213009b8ad57_merged.bin
+I (9700) transWARP: Running from partition: label=ota_1, type=0x0, subtype=0x11, offset=0x290000, size=0x280000
+I (9710) transWARP: Flash is write protected, unlocking it...
+I (9710) transWARP: ----------------Iterate through partitions---------------
+I (9720) transWARP: 	partition type: 0x1, subtype: 0x2, offset: 0x9000, size: 0x4000, label: nvs
+W (9730) transWARP: 		 don't delete
+I (9730) transWARP: 	partition type: 0x1, subtype: 0x0, offset: 0xd000, size: 0x2000, label: otadata
+I (9800) transWARP: 	partition type: 0x1, subtype: 0x1, offset: 0xf000, size: 0x1000, label: phy_init
+W (9800) transWARP: 		 don't delete
+I (9810) transWARP: 	partition type: 0x0, subtype: 0x10, offset: 0x10000, size: 0x280000, label: ota_0
+I (14100) transWARP: 	partition type: 0x0, subtype: 0x11, offset: 0x290000, size: 0x280000, label: ota_1
+W (14100) transWARP: 		 don't delete
+I (14110) transWARP: 	partition type: 0x1, subtype: 0x81, offset: 0x510000, size: 0x2e7000, label: storage
+I (15340) transWARP: Unprotect entire flash
+I (15340) transWARP: Erase flash up to first partition
+I (15630) transWARP: Erase flash after last partition
+I (16650) transWARP: Done erase region
+W (19060) wifi: [hal_ampdu.c,45] <ba-add>idx:0 (ifx:0, 10:9a:dd:8b:01:4b), tid:0, ssn:413, winSize:64
+I (19060) transWARP: firmware flash success 10%
+
+I (21230) transWARP: firmware flash success 20%
+
+I (24510) transWARP: firmware flash success 30%
+
+I (26650) transWARP: firmware flash success 40%
+
+I (29030) transWARP: firmware flash success 50%
+
+I (31990) transWARP: firmware flash success 60%
+
+I (34660) transWARP: firmware flash success 70%
+
+I (36870) transWARP: firmware flash success 80%
+
+W (39800) wifi: [ieee80211_ht.c,2792] [ADDBA]rx delba, code:39, delete tid:0
+W (39800) wifi: [hal_ampdu.c,127] <ba-del>idx:0, tid:0
+I (42110) transWARP: firmware flash success 90%
+
+I (45250) transWARP: HTTP Stream reader Status = 200, content_length = 2182352
+I (45250) transWARP: File reception / flashing complete, restarting into the new firmware.
+W (48260) wifi: [ieee80211_sta.c,204] state: run -> init (0)
+W (48260) wifi: [pm.c,3375] pm stop, total sleep time: 0 us / 45994866 us
+
+W (48260) wifi: [ieee80211_ht.c,2089] new:<13,0>, old:<13,0>, ap:<13,2>, sta:<13,0>, prof:1
+I (48270) transWARP: WIFI_EVENT_STA_DISCONNECTED
+W (48310) wifi: [ieee80211_ioctl.c,1817] flush txq
+W (48310) wifi: [if_hwctrl.c,732] stop sw txq
+W (48310) wifi: [lmac.c,2476] lmac stop hw txq
+ets Jul 29 2019 12:21:46
+
+rst:0xc (SW_CPU_RESET),boot:0x17 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:1184
+load:0x40078000,len:13132
+load:0x40080400,len:3036
+entry 0x400805e4
+                  0,463      **** TINKERFORGE WARP CHARGER FOR EN+ V2.0.12-642fb99d ****
+                  0,463           311K RAM SYSTEM   289836 HEAP BYTES FREE
+                  0,473  READY.
+                  0,473  Last reset reason was: Software reset via esp_restart.
+                  0,489  Data partition is not mountable as LittleFS. Formatting now.
+[   490][E][LittleFS.cpp:95] begin(): Mounting LittleFS failed! Error: -1
+                  0,740  Data partition is now formatted as LittleFS.
+                  0,744  Mounted data partition. 8192 of 655360 bytes (1.2 %) used
+                  0,810  Moving all config files into config folder
+                  0,864  WARP Charger for EN+ config version: 1.0.0
+                  0,868  AC011K error, could not restore persistent storage ac011k_hardware
+                  1,265  Starting scan to select unoccupied channel for soft AP.
+                  1,271  Set timezone to Europe/Berlin
+                  1,277  BUILD info: git url: git@github.com:warp-more-hardware/esp32-firmware.git, git branch: master, git commit id: ecf213009b8ad57.
+                  1,290  EVSE error, could not restore persistent storage slots config, setting defaults.
+                  1,347  set - slot 0: max_current: 16000, active: true, clear_on_disconnect: false
+                  1,425  set - slot 1: max_current: 16000, active: true, clear_on_disconnect: false
+                  1,516  set - slot 5: max_current: 32000, active: true, clear_on_disconnect: false
+                  1,616  set - slot 6: max_current: 0, active: false, clear_on_disconnect: true
+                  1,723  set - slot 7: max_current: 0, active: false, clear_on_disconnect: true
+                  1,724  Set up PrivComm: 115200, SERIAL_8N1, RX 26, TX 27
+                  1,735  cmdAC 0x0B CtrlSetRemoteStart  to 0
+                  1,735  cmdAC 0x09 CtrlSetS2OPENSTOP   to 0
+                  1,746  cmdAC 0x0A CtrlSetS2OPENLOCK   to 0
+                  1,746  cmdAC 0x0C CtrlSetOfflineStop  to 0
+                  1,756  cmdAA ClockAlignedDataInterval to 10s
+                  1,756  cmdAC 0x0D SetOfflineEnergy    to 3000Wh
+                  1,767  cmdAA CtrlSetGunTime 30
+                  1,767  cmdAA CtrlSetSmartparam
+                  1,778  	000: FA 03 00 00 AA 0A 06 00 18 08 02 00 F0 00 80 B0
+                  1,778  Tx cmd_AA seq:0A, len:6, crc:B080
+                  1,788  	000: FA 03 00 00 AA 0D 09 00 18 24 05 00 FF FF FF FF 55 10 90
+                  1,789  Tx cmd_AA seq:0D len:19 crc:9010
+                  1,799  	000: FA 03 00 00 AA 0E 04 00 10 0B 00 00 45 1C
+                  1,809  Tx cmd_AA seq:0E len:14 crc:1C45
+                  1,810  Initial transaction number 100000
+                  1,823  Internal meter enabeled
+[  1869][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+[  1872][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+[  1883][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+[  1892][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+[  1902][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+                  1,917  Username list does not exist! Recreating now.
+                  1,927  Recreating users file
+[  2307][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+                  2,349  mDNS responder started
+                  2,432  User slot enabled, but no users configured. Disabling user slot.
+                  2,453  EVSE Allowed charging current changed from 0mA to 16000mA
+                  2,454  This is AC011K- (AC011K-), a WARP Charger for EN+
+                  3,470  Selecting channel 13 for softAP
+                  3,472  Had to configure soft AP IP address 1 times.
+                  3,472  Wifi soft AP started
+                  3,482      SSID: AC011K-
+                  3,484      MAC address: 1C:9D:C2:57:43:F9
+                  3,485      IP address: 10.0.0.1
+                  6,048  EN+ GD EVSE found. Enabling EVSE support.
+                  6,050  time fill went wrong, using FAKE 2022/01/02 03:04:05
+                 10,982  This seems to be the first boot after a reset. Setting the UID based on the serial number to 12345678901234 and reboot.
+                 11,072  AC011K hardware persistent config stored.
+                 11,073  EVSE serial: SN12345678901234 hw: AC011K-AE-25 fw: 1.2.460
+                 11,083  EN+ GD EVSE initialized.
+                 11,088  Reboot requested by Empty UID.
+ets Jul 29 2019 12:21:46
+
+rst:0xc (SW_CPU_RESET),boot:0x17 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:1184
+load:0x40078000,len:13132
+load:0x40080400,len:3036
+entry 0x400805e4
+                  0,466      **** TINKERFORGE WARP CHARGER FOR EN+ V2.0.12-642fb99d ****
+                  0,467           311K RAM SYSTEM   289560 HEAP BYTES FREE
+                  0,477  READY.
+                  0,477  Last reset reason was: Software reset via esp_restart.
+                  0,538  Mounted data partition. 57344 of 655360 bytes (8.8 %) used
+                  0,798  WARP Charger for EN+ config version: 1.0.0
+                  0,960  Starting scan to select unoccupied channel for soft AP.
+                  0,970  Set timezone to Europe/Berlin
+                  0,984  BUILD info: git url: git@github.com:warp-more-hardware/esp32-firmware.git, git branch: master, git commit id: ecf213009b8ad57.
+                  1,041  Slot 0 active: true clear_on_disconnect: false 16000mA (INCOMING_CABLE)
+                  1,041  Slot 1 active: true clear_on_disconnect: false 16000mA (OUTGOING_CABLE)
+                  1,052  Slot 2 active: false clear_on_disconnect: false 0mA (SHUTDOWN_INPUT)
+                  1,062  Slot 3 active: false clear_on_disconnect: false 0mA (GP_INPUT)
+                  1,073  Slot 4 active: false clear_on_disconnect: false 0mA (AUTOSTART_BUTTON)
+                  1,073  Slot 5 active: true clear_on_disconnect: false 32000mA (GLOBAL)
+                  1,083  Slot 6 active: false clear_on_disconnect: true 0mA (USER)
+                  1,094  Slot 7 active: false clear_on_disconnect: true 0mA (CHARGE_MANAGER)
+                  1,104  Slot 8 active: false clear_on_disconnect: false 0mA (EXTERNAL)
+                  1,104  Slot 9 active: false clear_on_disconnect: false 0mA (MODBUS_TCP)
+                  1,115  Slot 10 active: false clear_on_disconnect: false 0mA (MODBUS_TCP_ENABLE)
+                  1,125  Slot 11 active: false clear_on_disconnect: false 0mA (OCPP)
+                  1,137  Set up PrivComm: 115200, SERIAL_8N1, RX 26, TX 27
+                  1,137  cmdAC 0x0B CtrlSetRemoteStart  to 0
+                  1,147  cmdAC 0x09 CtrlSetS2OPENSTOP   to 0
+                  1,147  cmdAC 0x0A CtrlSetS2OPENLOCK   to 0
+                  1,158  cmdAC 0x0C CtrlSetOfflineStop  to 0
+                  1,158  cmdAA ClockAlignedDataInterval to 10s
+                  1,168  cmdAC 0x0D SetOfflineEnergy    to 3000Wh
+                  1,169  cmdAA CtrlSetGunTime 30
+                  1,179  cmdAA CtrlSetSmartparam
+                  1,180  	000: FA 03 00 00 AA 0A 06 00 18 08 02 00 F0 00 80 B0
+                  1,190  Tx cmd_AA seq:0A, len:6, crc:B080
+                  1,190  	000: FA 03 00 00 AA 0D 09 00 18 24 05 00 FF FF FF FF 55 10 90
+                  1,201  Tx cmd_AA seq:0D len:19 crc:9010
+                  1,201  	000: FA 03 00 00 AA 0E 04 00 10 0B 00 00 45 1C
+                  1,211  Tx cmd_AA seq:0E len:14 crc:1C45
+                  1,212  Initial transaction number 100000
+                  1,225  Internal meter enabeled
+[  1261][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+[  1264][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+[  1276][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+[  1284][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+[  1295][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+[  1334][E][vfs_api.cpp:104] open(): /spiffs/charge-records/charge-record-1.bin does not exist, no permits for creation
+                  1,376  mDNS responder started
+                  1,463  User slot enabled, but no users configured. Disabling user slot.
+                  1,481  EN+ GD EVSE found. Enabling EVSE support.
+                  1,481  CtrlGetS20OpenStop = 0
+                  1,482  CtrlGetS20OPENLOCK = 0
+                  1,493  CtrlGetOfflineStop = 0
+                  1,494  ClockAlignedDataInterval is now: 10s
+                  1,495  EVSE Allowed charging current changed from 0mA to 16000mA
+                  1,506  CtrlGetOfflineEnergy 3000Wh
+                  1,508  Rx cmd_0A seq:07 len:6 crc:0A66 - cmdAAInit7Ack
+                  1,519  SetClrSmartparam
+                  1,520  This is AC011K-12345678901234 (AC011K-12345678901234), a WARP Charger for EN+
+2023-04-11 08:59:19,000  Got a more precise time from RTC (2023/04/11 07:59:19 UTC), setting local time in respect to timezone (Europe/Berlin).
+2023-04-11 08:59:19,011  Rx cmd_0A seq:0A len:5 crc:9B93 - ctrl_cmd set ack done, type:0
+2023-04-11 08:59:19,022  Rx cmd_0A seq:0A len:6 crc:FE86 - Heartbeat Timeout: 240s
+2023-04-11 08:59:19,023  Rx cmd_0A seq:0B len:5 crc:B354 - ctrl_cmd set start power mode done
+2023-04-11 08:59:19,034  Rx cmd_0A seq:0C len:6 crc:3A15 - cmdAAInit7Ack
+2023-04-11 08:59:19,048  ClearChargingProfile ack
+2023-04-11 08:59:19,048  	000: FA 03 00 00 0A 0D 08 00 14 24 04 00 FF FF FF FF 47 51
+2023-04-11 08:59:19,059  GetMaxCurrLimit ack 40960 160 (A0)
+2023-04-11 08:59:19,060  	000: FA 03 00 00 0A 0E 08 00 10 0B 04 00 A0 00 00 00 B4 B0
+2023-04-11 08:59:19,151  EVSE serial: SN12345678901234 hw: AC011K-AE-25 fw: 1.2.460
+2023-04-11 08:59:19,151  EN+ GD EVSE initialized.
+2023-04-11 08:59:19,199  EVSE GD Status now 1: Available (not engaged), allowed charging current 16000mA
+2023-04-11 08:59:21,022  Selecting channel 13 for softAP
+2023-04-11 08:59:21,024  Had to configure soft AP IP address 1 times.
+2023-04-11 08:59:21,024  Wifi soft AP started
+2023-04-11 08:59:21,034      SSID: AC011K-12345678901234
+2023-04-11 08:59:21,036      MAC address: 1C:9D:C2:57:43:F9
+2023-04-11 08:59:21,037      IP address: 10.0.0.1
+

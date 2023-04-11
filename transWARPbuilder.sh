@@ -12,11 +12,12 @@ export GOOS=linux   ; export GOARCH=arm    ; go build -o bin/transWARP-$GOARCH-$
 export GOOS=linux   ; export GOARCH=arm64  ; go build -o bin/transWARP-$GOARCH-$GOOS      transWARP.go
 export GOOS=windows ; export GOARCH=amd64  ; go build -o bin/transWARP-$GOARCH-$GOOS.exe  transWARP.go
 
-cp -a build/transWARP.bin bin/
-
-cp ../warp-more-hardware-esp32-firmware/software/build/warpAC011K_firmware_2_0_12_64033399_merged.bin bin/
-
 TAG=$(git tag --contains HEAD)
+if [ -z "$TAG" ]
+then
+    # git_commit_id
+    TAG=$(git rev-parse --short=15 HEAD)
+fi
 
-zip -9 -o -j -r transWARP-$TAG.zip bin
+zip -9 -o -j -u transWARP-$TAG.zip $(git ls-files --others --exclude-standard bin) bin/readme.txt build/transWARP.bin ../warp-more-hardware-esp32-firmware/software/build/warpAC011K_firmware_2_0_12_64033399_merged.bin
 
