@@ -1,9 +1,34 @@
 This is transWARP
 ~~~~~~~~~~~~~~~~~
 
-The little helper to get your EN+ wallbox upgraded to the
-WARP-more-hardware firmware without having to touch your
-hardware and screwing around.
+Dies ist transWARP, ein kleines Programm um die EN+ original
+Firmware durch die WARP-more-hardware Firmware zu ersetzen
+ohne die Wallbox anfassen und aufschrauben zu müssen.
+
+This is the little helper to get your EN+ wallbox upgraded
+to the WARP-more-hardware firmware without having to touch
+your hardware and screwing around.
+
+Die original Handy App (Chargin) geht hinterher nicht mehr!
+Und es ist auf jeden Fall sinnvoll sich vorher
+* alle Daten zu speichern die man aus der Chargin App
+  noch haben möchte sowie
+* alle RFID Karten aus der App zu löschen.
+
+The original smartphone app wil not work anymore after the
+transition!
+It is highly recommeded to do the following before upgrading:
+* save all data you may want to keep from the chargin app and
+* remove all RFID cards from the app
+
+Die Voraussetzung zum Erfolg ist, dass ihr transWARP im
+selben WiFi aufruft in dem auch eure Wallbox ist.
+
+The route to success is to call transWARP while conected
+to the same WiFi network as the EN+ wallbox is in.
+
+Einfach das Programm aufrufen welches für dein Betriebssystem
+passt und alles wird gut.
 
 Just call the binary that fits your platform and follow
 the instructions.
