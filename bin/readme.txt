@@ -33,6 +33,9 @@ passt und alles wird gut.
 Just call the binary that fits your platform and follow
 the instructions.
 
+Die Quellen finden sich unter:
+Find the sources at:
+https://github.com/warp-more-hardware/transWARP
 
 This is how it looks on my mac:
 

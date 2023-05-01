@@ -19,5 +19,5 @@ then
     TAG=$(git rev-parse --short=15 HEAD)
 fi
 
-zip -9 -o -j -u transWARP-$TAG.zip $(git ls-files --others --exclude-standard bin) bin/readme.txt build/transWARP.bin ../warp-more-hardware-esp32-firmware/software/build/warpAC011K_firmware_2_0_12_64033399_merged.bin
+zip -9 -o -j -u transWARP-$TAG.zip $(git ls-files --others --exclude-standard bin) bin/readme.txt build/transWARP.bin ../warp-more-hardware-esp32-firmware/software/build/warpAC011K_firmware_2_0_12_64033399_merged.bin LICENSE
 
